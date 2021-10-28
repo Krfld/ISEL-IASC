@@ -87,12 +87,13 @@ def __main__():
     history = model.fit(train_data,
                         target_data,
                         epochs=EPOCHS,
-                        verbose='auto',
-                        callbacks=[callbacks.EarlyStopping(
-                            monitor='loss',
-                            patience=20,
-                            mode='max',
-                            baseline=0.1)])
+                        verbose='auto',)
+    '''callbacks=[callbacks.EarlyStopping(
+        monitor='loss',
+        patience=20,
+        mode='max',
+        baseline=0.1)])
+        '''
 
     #print('\nEvaluate:', model.evaluate(x=train_data, y=target_data)[0], '\n')
 
