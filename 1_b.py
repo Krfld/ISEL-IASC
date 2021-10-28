@@ -76,7 +76,7 @@ def __main__():
 
     model.compile(loss='mean_squared_error',
                   optimizer=optimizers.gradient_descent_v2.SGD(
-                      learning_rate=0.001, momentum=0),
+                      learning_rate=0.5, momentum=0),
                   metrics=None)
 
     #
