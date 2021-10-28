@@ -7,10 +7,10 @@ from keras import optimizers
 from keras import callbacks
 
 # the four different states of the XOR gate
-training_data = np.array([[-1, -1], [-1, 1], [1, -1], [1, 1]])
+training_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 
 # the four expected results in the same order
-target_data = np.array([[-1], [1], [1], [-1]])
+target_data = np.array([[0], [1], [1], [0]])
 
 model = Sequential()
 model.add(Dense(8, input_dim=2, activation=activations.tanh))
@@ -18,14 +18,14 @@ model.add(Dense(1, activation=activations.tanh))
 
 model.compile(loss='mean_squared_error',
               optimizer=optimizers.gradient_descent_v2.SGD(
-                  learning_rate=2,
-                  momentum=0),
+                  learning_rate=0.05,
+                  momentum=1),
               metrics=None)
 
 history = model.fit(training_data,
                     target_data,
                     shuffle=False,
-                    epochs=1000,
+                    epochs=100,
                     verbose='auto',)
 '''callbacks=[callbacks.EarlyStopping(
         monitor='loss',
