@@ -114,7 +114,7 @@ def __main__():
     # Save model
     #
 
-    model.save('model', save_format='tf')
+    model.save('models/1_b', save_format='tf')
 
     np.savetxt('test_data.txt', np.array(
         test_data).round(), fmt='%d', delimiter=',')
