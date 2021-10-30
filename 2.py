@@ -7,7 +7,7 @@ from keras import activations
 from keras import optimizers
 
 SAMPLES = 10000
-EPOCHS = 1000
+EPOCHS = 10000
 
 MATRIX_SIZE = 5
 
