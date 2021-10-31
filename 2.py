@@ -12,9 +12,10 @@ EPOCHS = 10
 MATRIX_SIZE = 5
 
 LOAD_MODEL = False
+FOLDER = 'last'
 
 sample = np.array([[1, 1, 0, 1, 0],
-                   [1, 1, 1, 1, 0],
+                   [1, 0, 1, 1, 0],
                    [1, 0, 1, 0, 1],
                    [0, 1, 0, 1, 1],
                    [1, 0, 0, 1, 0]])
@@ -64,8 +65,10 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(64, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(64, activation=activations.relu))
+    model.add(Dense(256, input_dim=MATRIX_SIZE*2, activation=activations.relu))
+    model.add(Dense(256, activation=activations.relu))
+    model.add(Dense(256, activation=activations.relu))
+    model.add(Dense(256, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -82,27 +85,31 @@ def get_model():
 
 
 def __main__():
-    print('Generating target data...')
-    target_data = np.array(
-        [np.reshape(get_square_matrix(MATRIX_SIZE), MATRIX_SIZE**2) for i in range(SAMPLES)])
-    #print('Target Data\n', target_data)
-
-    print('Generating train data...')
-    train_data = np.array([get_matrix_outputs(target_data[i])
-                          for i in range(target_data.shape[0])], dtype=np.int)
-    #print('Train Data\n', train_data)
-
     if LOAD_MODEL:
-        print('Loding model...')
-        model = models.load_model('models/2/10k_samples_1k_epochs_64x64')
+        print('[DEBUG] Loding model...')
+        model = models.load_model(f'models/2/{FOLDER}')
+
     else:
+        print('[DEBUG] Generating target data...')
+        target_data = np.array(
+            [np.reshape(get_square_matrix(MATRIX_SIZE), MATRIX_SIZE**2) for i in range(SAMPLES)])
+        #print('Target Data\n', target_data)
+
+        print('[DEBUG] Generating train data...')
+        train_data = np.array([get_matrix_outputs(target_data[i])
+                               for i in range(target_data.shape[0])], dtype=np.int)
+        #print('Train Data\n', train_data)
         model = get_model()
 
-        print('Training model...')
+        print('[DEBUG] Training model...')
         history = model.fit(train_data, target_data,
-                            epochs=EPOCHS, verbose='auto', validation_split=0.2)
+                            epochs=EPOCHS,
+                            verbose='auto',
+                            validation_split=0.1,
+                            validation_freq=1,
+                            use_multiprocessing=True)
 
-        print(f'Samples: {SAMPLES} | Epochs: {EPOCHS}')
+        print(f'[DEBUG] Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
         model.save('models/2/last', save_format='tf')
 
@@ -111,6 +118,7 @@ def __main__():
 
     result = np.reshape(model.predict(np.array([get_matrix_outputs(
         np.reshape(sample, MATRIX_SIZE**2))])).round(), (MATRIX_SIZE, MATRIX_SIZE))
+
     print(result)
     print(np.array_equal(result, sample))
 
