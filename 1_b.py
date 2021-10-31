@@ -75,9 +75,8 @@ def __main__():
     model.add(Dense(4, activation=activations.sigmoid))
 
     model.compile(loss='mean_squared_error',
-                  optimizer=optimizers.gradient_descent_v2.SGD(
-                      learning_rate=0.5, momentum=0),
-                  metrics=None)
+                  optimizer=optimizers.adam_v2.Adam(learning_rate=0.1),
+                  metrics=['accuracy'])
 
     #
     # Train model

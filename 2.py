@@ -7,7 +7,7 @@ from keras import activations
 from keras import optimizers
 
 SAMPLES = 10000
-EPOCHS = 10000
+EPOCHS = 1000
 
 MATRIX_SIZE = 5
 
@@ -56,9 +56,8 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = Sequential()
-    model.add(Dense(16, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(16, activation=activations.relu))
-    model.add(Dense(16, activation=activations.relu))
+    model.add(Dense(64, input_dim=MATRIX_SIZE*2, activation=activations.relu))
+    model.add(Dense(64, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -68,6 +67,10 @@ def get_model():
     model.summary()
 
     return model
+
+#
+#
+#
 
 
 def __main__():
@@ -81,11 +84,11 @@ def __main__():
 
     model = get_model()
     history = model.fit(train_data, target_data,
-                        epochs=EPOCHS, verbose='auto', validation_split=1/4)
+                        epochs=EPOCHS, verbose='auto', validation_split=0.2)
 
     # model.predict(test_data).round()
 
-    model.save('models/2', save_format='tf')
+    model.save('models/2/last', save_format='tf')
 
     pyplot.plot(history.history['loss'])
     pyplot.show()
