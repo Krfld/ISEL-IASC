@@ -4,10 +4,11 @@ from matplotlib import pyplot
 from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
+from keras import callbacks
 from keras import models
 
-SAMPLES = 1000000
-EPOCHS = 10
+SAMPLES = 10000
+EPOCHS = 1000
 
 MATRIX_SIZE = 5
 
@@ -65,10 +66,8 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(256, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(256, activation=activations.relu))
-    model.add(Dense(256, activation=activations.relu))
-    model.add(Dense(256, activation=activations.relu))
+    model.add(Dense(1024, input_dim=MATRIX_SIZE*2, activation=activations.relu))
+    model.add(Dense(1024, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -107,13 +106,17 @@ def __main__():
                             verbose='auto',
                             validation_split=0.1,
                             validation_freq=1,
-                            use_multiprocessing=True)
+                            use_multiprocessing=True,
+                            callbacks=[callbacks.EarlyStopping(
+                                monitor='loss',
+                                patience=10)])
 
         print(f'[DEBUG] Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
         model.save('models/2/last', save_format='tf')
 
         pyplot.plot(history.history['loss'])
+        pyplot.plot(history.history['accuracy'])
         pyplot.show()
 
     result = np.reshape(model.predict(np.array([get_matrix_outputs(
