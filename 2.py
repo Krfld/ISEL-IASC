@@ -1,4 +1,5 @@
 import math
+import time
 import numpy as np
 from matplotlib import pyplot
 from keras.layers.core import Dense
@@ -7,8 +8,8 @@ from keras import optimizers
 from keras import callbacks
 from keras import models
 
-SAMPLES = 10000
-EPOCHS = 1000
+SAMPLES = 100000
+EPOCHS = 100
 
 MATRIX_SIZE = 5
 
@@ -66,8 +67,8 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(1024, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(1024, activation=activations.relu))
+    model.add(Dense(64, input_dim=MATRIX_SIZE*2, activation=activations.relu))
+    model.add(Dense(64, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -101,22 +102,23 @@ def __main__():
         model = get_model()
 
         print('[DEBUG] Training model...')
+        start = time.time()
         history = model.fit(train_data, target_data,
                             epochs=EPOCHS,
                             verbose='auto',
                             validation_split=0.1,
                             validation_freq=1,
-                            use_multiprocessing=True,
-                            callbacks=[callbacks.EarlyStopping(
-                                monitor='loss',
-                                patience=10)])
+                            use_multiprocessing=True)
 
-        print(f'[DEBUG] Samples: {SAMPLES} | Epochs: {EPOCHS}')
+        print(
+            f'[DEBUG] Took {time.time()-start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
         model.save('models/2/last', save_format='tf')
 
-        pyplot.plot(history.history['loss'])
-        pyplot.plot(history.history['accuracy'])
+        pyplot.plot(history.history['loss'], label='loss')
+        pyplot.plot(history.history['accuracy'], label='accuracy')
+        pyplot.plot(history.history['val_loss'], label='val_loss')
+        pyplot.plot(history.history['val_accuracy'], label='val_accuracy')
         pyplot.show()
 
     result = np.reshape(model.predict(np.array([get_matrix_outputs(
