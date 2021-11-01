@@ -5,7 +5,6 @@ from matplotlib import pyplot
 from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
-from keras import callbacks
 from keras import models
 
 SAMPLES = 10000
