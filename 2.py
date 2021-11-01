@@ -7,19 +7,18 @@ from keras import activations
 from keras import optimizers
 from keras import models
 
-SAMPLES = 10000
-EPOCHS = 300
+MATRIX_SIZE = 4
 
-MATRIX_SIZE = 5
+SAMPLES = 10000  # 2**(MATRIX_SIZE**2-1)
+EPOCHS = 2000
 
 LOAD_MODEL = False
 FOLDER = 'last'
 
-sample = np.array([[1, 1, 0, 1, 0],
-                   [1, 0, 1, 1, 0],
-                   [1, 0, 1, 0, 1],
-                   [0, 1, 0, 1, 1],
-                   [1, 0, 0, 1, 0]])
+sample = np.array([[1, 1, 0, 1],
+                   [1, 0, 1, 1],
+                   [1, 0, 1, 0],
+                   [0, 1, 0, 1]])
 
 #
 #
@@ -66,9 +65,8 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(1024, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(1024, activation=activations.relu))
-    model.add(Dense(1024, activation=activations.relu))
+    model.add(Dense(256, input_dim=MATRIX_SIZE*2, activation=activations.relu))
+    model.add(Dense(256, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -106,8 +104,8 @@ def __main__():
         history = model.fit(train_data, target_data,
                             epochs=EPOCHS,
                             verbose='auto',
-                            validation_split=0.1,
-                            validation_freq=1,
+                            validation_split=0.2,
+                            validation_freq=2,
                             use_multiprocessing=True)
 
         print(
