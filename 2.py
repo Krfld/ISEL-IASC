@@ -10,7 +10,7 @@ from keras import models
 MATRIX_SIZE = 4
 
 SAMPLES = 10000  # 2**(MATRIX_SIZE**2-1)
-EPOCHS = 2000
+EPOCHS = 100
 
 LOAD_MODEL = False
 FOLDER = 'last'
@@ -67,6 +67,7 @@ def get_model():
     model = models.Sequential()
     model.add(Dense(256, input_dim=MATRIX_SIZE*2, activation=activations.relu))
     model.add(Dense(256, activation=activations.relu))
+    model.add(Dense(256, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -107,6 +108,8 @@ def __main__():
                             validation_split=0.2,
                             validation_freq=2,
                             use_multiprocessing=True)
+
+        model.summary()
 
         print(
             f'[DEBUG] Took {time.time()-start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
