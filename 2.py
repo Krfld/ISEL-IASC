@@ -89,6 +89,7 @@ def __main__():
         model = models.load_model(f'models/2/{FOLDER}')
 
     else:
+        #! Generate different samples only
         print('[DEBUG] Generating target data...')
         target_data = np.array(
             [np.reshape(get_square_matrix(MATRIX_SIZE), MATRIX_SIZE**2) for i in range(SAMPLES)])
