@@ -1,6 +1,7 @@
 import math
 import time
 import numpy as np
+import random as rnd
 from matplotlib import pyplot
 from keras.layers.core import Dense
 from keras import activations
@@ -11,6 +12,8 @@ MATRIX_SIZE = 4
 
 SAMPLES = 10000  # 2**(MATRIX_SIZE**2-1)
 EPOCHS = 100
+
+TRAIN_TEST_RATIO = 0.8
 
 LOAD_MODEL = False
 FOLDER = 'last'
@@ -27,6 +30,26 @@ sample = np.array([[1, 1, 0, 1],
 
 def get_square_matrix(size: int):
     return np.random.randint(2, size=(size, size))
+
+
+def get_data(samples: int):
+    data = np.array([])
+    numbers = np.array([])
+
+    while len(data) < samples:
+        n = rnd.randint(0, 2**(MATRIX_SIZE**2)-1)
+
+        if(n in numbers):
+            continue
+
+        numbers = np.append(numbers, n)
+        list1 = []
+        list1[:0] = bin(n).removeprefix(
+            '0b').rjust(MATRIX_SIZE**2, '0')
+        data = np.append(data, [bin(n).removeprefix(
+            '0b').rjust(MATRIX_SIZE**2, '0')])
+
+    return data
 
 
 def get_matrix_outputs(matrix):
@@ -89,16 +112,17 @@ def __main__():
         model = models.load_model(f'models/2/{FOLDER}')
 
     else:
-        #! Generate different samples only
+        data = get_data(SAMPLES)
+
         print('[DEBUG] Generating target data...')
-        target_data = np.array(
-            [np.reshape(get_square_matrix(MATRIX_SIZE), MATRIX_SIZE**2) for i in range(SAMPLES)])
+        target_data = data[:int(SAMPLES*TRAIN_TEST_RATIO)]
         #print('Target Data\n', target_data)
 
         print('[DEBUG] Generating train data...')
-        train_data = np.array([get_matrix_outputs(target_data[i])
-                               for i in range(target_data.shape[0])], dtype=np.int)
+        train_data = np.array([get_matrix_outputs(m)
+                              for m in target_data], dtype=np.int)
         #print('Train Data\n', train_data)
+
         model = get_model()
 
         print('[DEBUG] Training model...')
@@ -123,6 +147,8 @@ def __main__():
         pyplot.plot(history.history['val_accuracy'], label='val_accuracy')
         pyplot.legend()
         pyplot.show()
+
+        # model.evaluate()
 
     result = np.reshape(model.predict(np.array([get_matrix_outputs(
         np.reshape(sample, MATRIX_SIZE**2))])).round(), (MATRIX_SIZE, MATRIX_SIZE))
