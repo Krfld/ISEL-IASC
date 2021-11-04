@@ -10,7 +10,7 @@ from keras import models
 
 MATRIX_SIZE = 4
 
-SAMPLES = 10000  # 2**(MATRIX_SIZE**2-1)
+SAMPLES = 2**(MATRIX_SIZE**2-1)
 EPOCHS = 100
 
 TRAIN_TEST_RATIO = 0.8
@@ -28,26 +28,29 @@ sample = np.array([[1, 1, 0, 1],
 #
 
 
-def get_square_matrix(size: int):
-    return np.random.randint(2, size=(size, size))
+def get_square_matrix():
+    return np.random.randint(2, size=(MATRIX_SIZE, MATRIX_SIZE))
 
 
-def get_data(samples: int):
-    data = np.array([])
-    numbers = np.array([])
+def get_data():
+    data = np.array([], dtype=int)
+    numbers = np.array([], dtype=int)
 
-    while len(data) < samples:
-        n = rnd.randint(0, 2**(MATRIX_SIZE**2)-1)
+    while len(numbers) < SAMPLES:
+        n = rnd.randint(0, 2**(MATRIX_SIZE**2) - 1)
 
         if(n in numbers):
+            if len(numbers) == SAMPLES:
+                break
             continue
 
         numbers = np.append(numbers, n)
-        list1 = []
-        list1[:0] = bin(n).removeprefix(
-            '0b').rjust(MATRIX_SIZE**2, '0')
-        data = np.append(data, [bin(n).removeprefix(
-            '0b').rjust(MATRIX_SIZE**2, '0')])
+
+        matrix = bin(n).removeprefix('0b').rjust(MATRIX_SIZE**2, '0')
+        matrix = np.array([int(i) for i in matrix])
+        data = np.append(data, matrix)
+
+    data = np.reshape(data, (SAMPLES, MATRIX_SIZE**2))
 
     return data
 
@@ -88,9 +91,9 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(256, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(256, activation=activations.relu))
-    model.add(Dense(256, activation=activations.relu))
+    model.add(Dense(1024, input_dim=MATRIX_SIZE*2, activation=activations.relu))
+    model.add(Dense(1024, activation=activations.relu))
+    model.add(Dense(1024, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -112,7 +115,7 @@ def __main__():
         model = models.load_model(f'models/2/{FOLDER}')
 
     else:
-        data = get_data(SAMPLES)
+        data = get_data()
 
         print('[DEBUG] Generating target data...')
         target_data = data[:int(SAMPLES*TRAIN_TEST_RATIO)]
@@ -120,7 +123,7 @@ def __main__():
 
         print('[DEBUG] Generating train data...')
         train_data = np.array([get_matrix_outputs(m)
-                              for m in target_data], dtype=np.int)
+                              for m in target_data], dtype=int)
         #print('Train Data\n', train_data)
 
         model = get_model()
