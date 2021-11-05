@@ -10,8 +10,8 @@ from keras import models
 
 MATRIX_SIZE = 4
 
-SAMPLES = 2**(MATRIX_SIZE**2-1)
-EPOCHS = 100
+SAMPLES = 10000  # 2**(MATRIX_SIZE**2-1)
+EPOCHS = 1000
 
 TRAIN_TEST_RATIO = 0.8
 
@@ -91,9 +91,10 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(1024, input_dim=MATRIX_SIZE*2, activation=activations.relu))
-    model.add(Dense(1024, activation=activations.relu))
-    model.add(Dense(1024, activation=activations.relu))
+    model.add(Dense(2**10, input_dim=MATRIX_SIZE *
+              2, activation=activations.relu))
+    model.add(Dense(2**10, activation=activations.relu))
+    model.add(Dense(2**10, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(),
@@ -134,7 +135,7 @@ def __main__():
                             epochs=EPOCHS,
                             verbose='auto',
                             validation_split=0.2,
-                            validation_freq=2,
+                            validation_freq=1,
                             use_multiprocessing=True)
 
         model.summary()
