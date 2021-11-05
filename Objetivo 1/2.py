@@ -147,7 +147,11 @@ def __main__():
         pyplot.legend()
         pyplot.show()
 
-        # model.evaluate()
+        test_target_data = data[int(SAMPLES*TRAIN_TEST_RATIO):]
+        test_data = np.array([get_matrix_outputs(m) for m in test_target_data], dtype=int)
+
+        print('[DEBUG] Evaluating model...')
+        print(model.evaluate(test_data, test_target_data))
 
     result = np.reshape(
         model.predict(np.array([get_matrix_outputs(np.reshape(sample, MATRIX_SIZE**2))])).round(),
