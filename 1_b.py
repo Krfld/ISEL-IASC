@@ -115,8 +115,7 @@ def __main__():
 
     model.save('models/1_b', save_format='tf')
 
-    np.savetxt('test_data.txt', np.array(
-        test_data).round(), fmt='%d', delimiter=',')
+    np.savetxt('test_data.txt', np.array(test_data).round(), fmt='%d', delimiter=',')
     np.savetxt('model_predict.txt', predictions, fmt='%d', delimiter=',')
 
     print('\nSamples: ', SAMPLES, ' | Epochs: ', EPOCHS, '\n')

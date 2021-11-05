@@ -91,15 +91,12 @@ def get_matrix_outputs(matrix):
 
 def get_model():
     model = models.Sequential()
-    model.add(Dense(2**10, input_dim=MATRIX_SIZE *
-              2, activation=activations.relu))
+    model.add(Dense(2**10, input_dim=MATRIX_SIZE * 2, activation=activations.relu))
     model.add(Dense(2**10, activation=activations.relu))
     model.add(Dense(2**10, activation=activations.relu))
     model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
 
-    model.compile(optimizer=optimizers.adam_v2.Adam(),
-                  loss='mean_squared_error',
-                  metrics=["accuracy"])
+    model.compile(optimizer=optimizers.adam_v2.Adam(), loss='mean_squared_error', metrics=["accuracy"])
 
     model.summary()
 
@@ -123,8 +120,7 @@ def __main__():
         #print('Target Data\n', target_data)
 
         print('[DEBUG] Generating train data...')
-        train_data = np.array([get_matrix_outputs(m)
-                              for m in target_data], dtype=int)
+        train_data = np.array([get_matrix_outputs(m) for m in target_data], dtype=int)
         #print('Train Data\n', train_data)
 
         model = get_model()
@@ -140,8 +136,7 @@ def __main__():
 
         model.summary()
 
-        print(
-            f'[DEBUG] Took {time.time()-start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
+        print(f'[DEBUG] Took {time.time()-start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
         model.save('models/2/last', save_format='tf')
 
@@ -154,8 +149,10 @@ def __main__():
 
         # model.evaluate()
 
-    result = np.reshape(model.predict(np.array([get_matrix_outputs(
-        np.reshape(sample, MATRIX_SIZE**2))])).round(), (MATRIX_SIZE, MATRIX_SIZE))
+    result = np.reshape(
+        model.predict(np.array([get_matrix_outputs(np.reshape(sample, MATRIX_SIZE**2))])).round(),
+        (MATRIX_SIZE, MATRIX_SIZE)
+    )
 
     print(result)
     print(np.array_equal(result, sample))
