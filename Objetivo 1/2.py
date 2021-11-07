@@ -1,4 +1,3 @@
-import math
 import time
 import numpy as np
 import random as rnd
@@ -7,6 +6,8 @@ from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
 from keras import models
+
+#! Normalize inputs
 
 MATRIX_SIZE = 4
 
@@ -28,11 +29,13 @@ sample = np.array([[1, 1, 0, 1],
 #
 
 
-def get_square_matrix():
-    return np.random.randint(2, size=(MATRIX_SIZE, MATRIX_SIZE))
-
-
 def get_data():
+    """ Gerar array de arrays únicos de tamanho MATRIX_SIZE**2
+
+    Returns:
+        NumPy Array: Array de arrays únicos de tamanho MATRIX_SIZE**2
+    """
+
     data = np.array([], dtype=int)
     numbers = np.array([], dtype=int)
 
@@ -56,7 +59,16 @@ def get_data():
 
 
 def get_matrix_outputs(matrix):
-    size = int(math.sqrt(np.size(matrix)))
+    """ Gerar array com os números associados das linhas e colunas da matriz
+
+    Args:
+        matrix (NumPy Array): Matriz quadrada
+
+    Returns:
+        NumPy Array: [linha1, ..., linhaN, coluna1, ..., colunaN]
+    """
+
+    size = len(matrix)
 
     matrix = np.reshape(matrix, (size, size))
 
@@ -90,6 +102,12 @@ def get_matrix_outputs(matrix):
 
 
 def get_model():
+    """ Get model
+
+    Returns:
+        Sequential Model: model with MATRIX_SIZE*2 inputs and MATRIX_SIZE**2 outputs
+    """
+
     model = models.Sequential()
     model.add(Dense(2**10, input_dim=MATRIX_SIZE * 2, activation=activations.relu))
     model.add(Dense(2**10, activation=activations.relu))
@@ -108,11 +126,14 @@ def get_model():
 
 
 def __main__():
+    # Test loaded model
     if LOAD_MODEL:
         print('[DEBUG] Loding model...')
         model = models.load_model(f'models/2/{FOLDER}')
 
+    # Train and save model
     else:
+        # Generate data
         data = get_data()
 
         print('[DEBUG] Generating target data...')
@@ -123,6 +144,7 @@ def __main__():
         train_data = np.array([get_matrix_outputs(m) for m in target_data], dtype=int)
         #print('Train Data\n', train_data)
 
+        # Train model
         model = get_model()
 
         print('[DEBUG] Training model...')
@@ -138,8 +160,10 @@ def __main__():
 
         print(f'[DEBUG] Took {time.time()-start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
+        # Save model
         model.save('models/2/last', save_format='tf')
 
+        # Plot performance
         pyplot.plot(history.history['loss'], label='loss')
         pyplot.plot(history.history['accuracy'], label='accuracy')
         pyplot.plot(history.history['val_loss'], label='val_loss')
@@ -147,6 +171,7 @@ def __main__():
         pyplot.legend()
         pyplot.show()
 
+        # Test model
         test_target_data = data[int(SAMPLES*TRAIN_TEST_RATIO):]
         test_data = np.array([get_matrix_outputs(m) for m in test_target_data], dtype=int)
 

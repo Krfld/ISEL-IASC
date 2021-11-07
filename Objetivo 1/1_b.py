@@ -9,6 +9,8 @@ from keras import callbacks
 from keras import metrics
 from keras.saving import save
 
+#! Use numpy
+
 SAMPLES = 1000
 EPOCHS = 100
 
@@ -71,11 +73,11 @@ def __main__():
     #
 
     model = Sequential()
-    model.add(Dense(16, input_dim=16, activation=activations.tanh))
+    model.add(Dense(64, input_dim=16, activation=activations.relu))
     model.add(Dense(4, activation=activations.sigmoid))
 
     model.compile(loss='mean_squared_error',
-                  optimizer=optimizers.adam_v2.Adam(learning_rate=0.1),
+                  optimizer=optimizers.adam_v2.Adam(learning_rate=0.5),
                   metrics=['accuracy'])
 
     #
@@ -86,13 +88,12 @@ def __main__():
     history = model.fit(train_data,
                         target_data,
                         epochs=EPOCHS,
-                        verbose='auto',)
-    '''callbacks=[callbacks.EarlyStopping(
-        monitor='loss',
-        patience=20,
-        mode='max',
-        baseline=0.1)])
-        '''
+                        verbose='auto',
+                        validation_split=0.2,
+                        callbacks=[callbacks.EarlyStopping(
+                            monitor='val_loss',
+                            mode='auto',
+                            baseline=0.1)])
 
     #print('\nEvaluate:', model.evaluate(x=train_data, y=target_data)[0], '\n')
 
@@ -115,12 +116,16 @@ def __main__():
 
     model.save('models/1_b', save_format='tf')
 
-    np.savetxt('test_data.txt', np.array(test_data).round(), fmt='%d', delimiter=',')
-    np.savetxt('model_predict.txt', predictions, fmt='%d', delimiter=',')
+    #np.savetxt('test_data.txt', np.array(test_data).round(), fmt='%d', delimiter=',')
+    #np.savetxt('model_predict.txt', predictions, fmt='%d', delimiter=',')
 
     print('\nSamples: ', SAMPLES, ' | Epochs: ', EPOCHS, '\n')
 
-    pyplot.plot(history.history['loss'])
+    pyplot.plot(history.history['loss'], label='loss')
+    pyplot.plot(history.history['accuracy'], label='accuracy')
+    pyplot.plot(history.history['val_loss'], label='val_loss')
+    pyplot.plot(history.history['val_accuracy'], label='val_accuracy')
+    pyplot.legend()
     pyplot.show()
 
 

@@ -13,13 +13,13 @@ training_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
 target_data = np.array([[0], [1], [1], [0]])
 
 model = Sequential()
-model.add(Dense(8, input_dim=2, activation=activations.tanh))
+model.add(Dense(2, input_dim=2, activation=activations.tanh))
 model.add(Dense(1, activation=activations.tanh))
 
 model.compile(loss='mean_squared_error',
               optimizer=optimizers.gradient_descent_v2.SGD(
-                  learning_rate=0.05,
-                  momentum=1),
+                  learning_rate=0.5,
+                  momentum=0),
               metrics=None)
 
 history = model.fit(training_data,
