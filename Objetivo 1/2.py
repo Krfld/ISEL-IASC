@@ -1,4 +1,5 @@
 import time
+import math
 import numpy as np
 import random as rnd
 from matplotlib import pyplot
@@ -7,7 +8,7 @@ from keras import activations
 from keras import optimizers
 from keras import models
 
-#! Normalize inputs
+# ! Normalize inputs
 
 MATRIX_SIZE = 4
 
@@ -23,6 +24,7 @@ sample = np.array([[1, 1, 0, 1],
                    [1, 0, 1, 1],
                    [1, 0, 1, 0],
                    [0, 1, 0, 1]])
+
 
 #
 #
@@ -40,20 +42,20 @@ def get_data():
     numbers = np.array([], dtype=int)
 
     while len(numbers) < SAMPLES:
-        n = rnd.randint(0, 2**(MATRIX_SIZE**2) - 1)
+        n = rnd.randint(0, 2 ** (MATRIX_SIZE ** 2) - 1)
 
-        if(n in numbers):
+        if n in numbers:
             if len(numbers) == SAMPLES:
                 break
             continue
 
         numbers = np.append(numbers, n)
 
-        matrix = bin(n).removeprefix('0b').rjust(MATRIX_SIZE**2, '0')
+        matrix = bin(n).removeprefix('0b').rjust(MATRIX_SIZE ** 2, '0')
         matrix = np.array([int(i) for i in matrix])
         data = np.append(data, matrix)
 
-    data = np.reshape(data, (SAMPLES, MATRIX_SIZE**2))
+    data = np.reshape(data, (SAMPLES, MATRIX_SIZE ** 2))
 
     return data
 
@@ -68,7 +70,7 @@ def get_matrix_outputs(matrix):
         NumPy Array: [linha1, ..., linhaN, coluna1, ..., colunaN]
     """
 
-    size = len(matrix)
+    size = int(math.sqrt(np.size(matrix)))
 
     matrix = np.reshape(matrix, (size, size))
 
@@ -79,7 +81,7 @@ def get_matrix_outputs(matrix):
         for n in matrix[row, :]:
             if n == 0:
                 space = True
-            elif space == True:
+            elif space:
                 outputs[0][row] *= 10
                 space = False
             outputs[0][row] += n
@@ -89,12 +91,13 @@ def get_matrix_outputs(matrix):
         for n in matrix[:, col]:
             if n == 0:
                 space = True
-            elif space == True:
+            elif space:
                 outputs[1][col] *= 10
                 space = False
             outputs[1][col] += n
 
-    return np.reshape(outputs, size*2)
+    return np.reshape(outputs, size * 2)
+
 
 #
 #
@@ -109,16 +112,17 @@ def get_model():
     """
 
     model = models.Sequential()
-    model.add(Dense(2**10, input_dim=MATRIX_SIZE * 2, activation=activations.relu))
-    model.add(Dense(2**10, activation=activations.relu))
-    model.add(Dense(2**10, activation=activations.relu))
-    model.add(Dense(MATRIX_SIZE**2, activation=activations.sigmoid))
+    model.add(Dense(2 ** 10, input_dim=MATRIX_SIZE * 2, activation=activations.relu))
+    model.add(Dense(2 ** 10, activation=activations.relu))
+    model.add(Dense(2 ** 10, activation=activations.relu))
+    model.add(Dense(MATRIX_SIZE ** 2, activation=activations.sigmoid))
 
     model.compile(optimizer=optimizers.adam_v2.Adam(), loss='mean_squared_error', metrics=["accuracy"])
 
     model.summary()
 
     return model
+
 
 #
 #
@@ -137,12 +141,12 @@ def __main__():
         data = get_data()
 
         print('[DEBUG] Generating target data...')
-        target_data = data[:int(SAMPLES*TRAIN_TEST_RATIO)]
-        #print('Target Data\n', target_data)
+        target_data = data[:int(SAMPLES * TRAIN_TEST_RATIO)]
+        # print('Target Data\n', target_data)
 
         print('[DEBUG] Generating train data...')
         train_data = np.array([get_matrix_outputs(m) for m in target_data], dtype=int)
-        #print('Train Data\n', train_data)
+        # print('Train Data\n', train_data)
 
         # Train model
         model = get_model()
@@ -158,7 +162,7 @@ def __main__():
 
         model.summary()
 
-        print(f'[DEBUG] Took {time.time()-start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
+        print(f'[DEBUG] Took {time.time() - start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
         # Save model
         model.save('models/2/last', save_format='tf')
@@ -172,14 +176,14 @@ def __main__():
         pyplot.show()
 
         # Test model
-        test_target_data = data[int(SAMPLES*TRAIN_TEST_RATIO):]
+        test_target_data = data[int(SAMPLES * TRAIN_TEST_RATIO):]
         test_data = np.array([get_matrix_outputs(m) for m in test_target_data], dtype=int)
 
         print('[DEBUG] Evaluating model...')
         print(model.evaluate(test_data, test_target_data))
 
     result = np.reshape(
-        model.predict(np.array([get_matrix_outputs(np.reshape(sample, MATRIX_SIZE**2))])).round(),
+        model.predict(np.array([get_matrix_outputs(np.reshape(sample, MATRIX_SIZE ** 2))])).round(),
         (MATRIX_SIZE, MATRIX_SIZE)
     )
 
