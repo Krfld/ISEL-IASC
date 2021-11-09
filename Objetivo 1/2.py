@@ -12,8 +12,8 @@ from keras import models
 
 MATRIX_SIZE = 4
 
-SAMPLES = 10000  # 2**(MATRIX_SIZE**2-1)
-EPOCHS = 1000
+SAMPLES = 1000  # 2**(MATRIX_SIZE**2-1)
+EPOCHS = 10
 
 TRAIN_TEST_RATIO = 0.8
 
@@ -138,9 +138,9 @@ def __main__():
     # Train and save model
     else:
         # Generate data
+        print('[DEBUG] Generating target data...')
         data = get_data()
 
-        print('[DEBUG] Generating target data...')
         target_data = data[:int(SAMPLES * TRAIN_TEST_RATIO)]
         # print('Target Data\n', target_data)
 
@@ -191,4 +191,5 @@ def __main__():
     print(np.array_equal(result, sample))
 
 
+print('\n' + '-'*100 + '\n')
 __main__()
