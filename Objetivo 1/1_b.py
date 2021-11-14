@@ -1,17 +1,13 @@
+
 import numpy as np
 import random as rnd
-from matplotlib import pyplot
+import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
-from keras import callbacks
-from keras import metrics
-from keras.saving import save
 
-#! Use numpy
-
-SAMPLES = 1000
+SAMPLES = 10000
 EPOCHS = 100
 
 
@@ -20,30 +16,32 @@ def __main__():
     # Train data
     #
 
-    a = [1, 1, 1, 1,
-         1, 0, 0, 1,
-         1, 0, 0, 1,
-         1, 1, 1, 1]
+    a = np.array([1, 1, 1, 1,
+                  1, 0, 0, 1,
+                  1, 0, 0, 1,
+                  1, 1, 1, 1])
 
-    b = [1, 0, 0, 1,
-         0, 1, 1, 0,
-         0, 1, 1, 0,
-         1, 0, 0, 1]
+    b = np.array([1, 0, 0, 1,
+                  0, 1, 1, 0,
+                  0, 1, 1, 0,
+                  1, 0, 0, 1])
 
-    c = [1, 0, 1, 0,
-         0, 1, 0, 1,
-         1, 0, 1, 0,
-         0, 1, 0, 1]
+    c = np.array([1, 0, 1, 0,
+                  0, 1, 0, 1,
+                  1, 0, 1, 0,
+                  0, 1, 0, 1])
 
-    d = [1, 0, 1, 0,
-         1, 0, 1, 0,
-         1, 0, 1, 0,
-         1, 0, 1, 0]
+    d = np.array([1, 0, 1, 0,
+                  1, 0, 1, 0,
+                  1, 0, 1, 0,
+                  1, 0, 1, 0])
 
-    train_data = [a, b, c, d] * 50
+    train_data = np.concatenate(([a], [b], [c], [d]))
+
+    train_data = np.concatenate(([train_data]*100))
 
     for i in range(SAMPLES - len(train_data)):
-        train_data.append([rnd.randint(0, 1) for i in range(16)])
+        train_data = np.append(train_data, [[rnd.randint(0, 1) for i in range(16)]], axis=0)
 
     np.random.shuffle(train_data)
 
@@ -53,18 +51,19 @@ def __main__():
     # Target data
     #
 
-    target_data = []
+    target_data = np.array([], dtype=int)
     for data in train_data:
         if np.array_equal(data, a):
-            target_data.append([1, 0, 0, 0])
+            target_data = np.append(target_data, [1, 0, 0, 0])
         elif np.array_equal(data, b):
-            target_data.append([0, 1, 0, 0])
+            target_data = np.append(target_data, [0, 1, 0, 0])
         elif np.array_equal(data, c):
-            target_data.append([0, 0, 1, 0])
+            target_data = np.append(target_data, [0, 0, 1, 0])
         elif np.array_equal(data, d):
-            target_data.append([0, 0, 0, 1])
+            target_data = np.append(target_data, [0, 0, 0, 1])
         else:
-            target_data.append([0, 0, 0, 0])
+            target_data = np.append(target_data, [0, 0, 0, 0])
+    target_data = np.reshape(target_data, (SAMPLES, 4))
 
     #print('Target', target_data, len(target_data))
 
@@ -73,11 +72,11 @@ def __main__():
     #
 
     model = Sequential()
-    model.add(Dense(64, input_dim=16, activation=activations.relu))
+    model.add(Dense(128, input_dim=16, activation=activations.relu))
     model.add(Dense(4, activation=activations.sigmoid))
 
     model.compile(loss='mean_squared_error',
-                  optimizer=optimizers.adam_v2.Adam(learning_rate=0.5),
+                  optimizer=optimizers.adam_v2.Adam(),
                   metrics=['accuracy'])
 
     #
@@ -90,10 +89,7 @@ def __main__():
                         epochs=EPOCHS,
                         verbose='auto',
                         validation_split=0.2,
-                        callbacks=[callbacks.EarlyStopping(
-                            monitor='val_loss',
-                            mode='auto',
-                            baseline=0.1)])
+                        use_multiprocessing=True)
 
     #print('\nEvaluate:', model.evaluate(x=train_data, y=target_data)[0], '\n')
 
@@ -101,7 +97,7 @@ def __main__():
     # Test data
     #
 
-    test_data = train_data.copy()
+    test_data = np.array(train_data)
     np.random.shuffle(test_data)
 
     #
@@ -116,17 +112,18 @@ def __main__():
 
     model.save('models/1_b', save_format='tf')
 
-    #np.savetxt('test_data.txt', np.array(test_data).round(), fmt='%d', delimiter=',')
-    #np.savetxt('model_predict.txt', predictions, fmt='%d', delimiter=',')
+    np.savetxt('models/1_b/test_data.txt', np.array(test_data).round(), fmt='%d', delimiter=',')
+    np.savetxt('models/1_b/model_predict.txt', predictions, fmt='%d', delimiter=',')
 
     print('\nSamples: ', SAMPLES, ' | Epochs: ', EPOCHS, '\n')
 
-    pyplot.plot(history.history['loss'], label='loss')
-    pyplot.plot(history.history['accuracy'], label='accuracy')
-    pyplot.plot(history.history['val_loss'], label='val_loss')
-    pyplot.plot(history.history['val_accuracy'], label='val_accuracy')
-    pyplot.legend()
-    pyplot.show()
+    plt.plot(history.history['loss'], label='loss')
+    plt.plot(history.history['accuracy'], label='accuracy')
+    plt.plot(history.history['val_loss'], label='val_loss')
+    plt.plot(history.history['val_accuracy'], label='val_accuracy')
+    plt.legend()
+    plt.savefig('models/1_b/last.png')
+    plt.show()
 
 
 __main__()

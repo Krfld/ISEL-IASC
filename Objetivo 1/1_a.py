@@ -4,7 +4,6 @@ from keras.models import Sequential
 from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
-from keras import callbacks
 
 EPOCHS = 300
 HL_NEURONS = 2
