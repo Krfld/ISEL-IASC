@@ -126,9 +126,10 @@ class TravellingSalesman:
 
             self.state.append(city)
 
+        print('Start state:', self.state)
+
+        plt.plot(*zip(*self.state), 'o-')
         for i in range(self.N):
-            plt.scatter(self.state[i][0], self.state[i][1])
-            #plt.plot(self.state[i][0], self.state[i][1])
             plt.annotate(i+1, (self.state[i][0], self.state[i][1]))
         plt.show()
 
@@ -142,9 +143,10 @@ class TravellingSalesman:
         return
 
     def stateValue(self, state):
+
         return
 
 
 if __name__ == '__main__':
-    TravellingSalesman(10, 10)
+    TravellingSalesman(10)
     # SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(20))
