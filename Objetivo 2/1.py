@@ -5,15 +5,40 @@ import random as rnd
 
 class SearchAlgorithms:
     def stochasticHillClimbing(problem):
+        STUCK_ITERATIONS = 10
+
         current = problem.initialState()
+        oldNeighbor = current.copy()
 
+        stuck = 0
         while True:
-            neighbor = problem.bestNeighbor(current)
+            neighbor = problem.bestNeighbor(current)  # Obtain best neighbor state from current one
+            print(neighbor, current, '|', problem.stateValue(neighbor), problem.stateValue(current))
 
-            if problem.stateValue(neighbor) <= problem.stateValue(current):
+            # Check if it's stuck in an infinite loop
+            if np.array_equal(neighbor, oldNeighbor):
+                stuck += 1
+            else:
+                stuck = 0
+
+            # Return state if it's stuck in a local maximum or in a loop
+            if problem.stateValue(neighbor) < problem.stateValue(current) or stuck > STUCK_ITERATIONS:
+                print(current, problem.stateValue(current))
                 return current
 
+            oldNeighbor = current.copy()
             current = neighbor.copy()
+
+    def hillClimbingWithRandomRestart(problem):
+        solution = None
+
+        while True:
+            # Obtain solution from stochastic hill climbing
+            solution = SearchAlgorithms.stochasticHillClimbing(problem)
+            # Return solution state if it's in a global maximum
+            if problem.stateValue(solution) == problem.maxValue:
+                print('Solution state:', solution, '|', problem.stateValue(solution))
+                return solution
 
     def simulatedAnnealing(problem, schedule):
         current = problem.initialState()
@@ -30,18 +55,20 @@ class SearchAlgorithms:
             deltaE = problem.stateValue(neighbor) - problem.stateValue(current)
 
             if deltaE > 0 or rnd.random() <= math.exp(deltaE/T):
-                current = neighbor
+                current = neighbor.copy()
 
 
 class NQueens:
     def __init__(self, N):
         self.N = N
-        self.state = self.initialState()
+        self.maxValue = 0
+        # self.state = np.array([i for i in range(1, self.N+1)])
+        # np.random.shuffle(self.state)
+        self.state = np.array([rnd.randint(1, self.N) for i in range(self.N)])
+        print('Start state:', self.state)
 
     def initialState(self):
-        # state = np.array([i for i in range(1, self.N+1)])
-        # np.random.shuffle(state)
-        return np.array([rnd.randint(1, self.N) for i in range(self.N)])
+        return self.state
 
     def randomNeighbor(self, state):
         col = rnd.randint(0, self.N-1)
@@ -56,7 +83,7 @@ class NQueens:
 
     def bestNeighbor(self, state):
         bestState = state.copy()
-        bestState[0] = 5 - bestState[0]
+        bestState[0] = self.N+1 - bestState[0]  # Change the first queen
         bestValue = self.stateValue(bestState)
 
         cols = np.array([i for i in range(self.N)])
@@ -86,4 +113,19 @@ class NQueens:
         return value
 
 
-print(SearchAlgorithms.stochasticHillClimbing(NQueens(8)))
+class TravellingSalesman:
+    def __init__(self, N):
+        self.N = N
+
+    def initialState(self):
+        return
+
+    def randomNeighbor(self, state):
+        return
+
+    def stateValue(self, state):
+        return
+
+
+if __name__ == '__main__':
+    SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(20))
