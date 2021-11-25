@@ -4,8 +4,7 @@ import random as rnd
 
 
 class SearchAlgorithms:
-    def stochasticHillClimbing(problem):
-        STUCK_ITERATIONS = 10
+    def stochasticHillClimbing(problem, stuckIterations=10):
 
         current = problem.initialState()
         oldNeighbor = current.copy()
@@ -22,7 +21,7 @@ class SearchAlgorithms:
                 stuck = 0
 
             # Return state if it's stuck in a local maximum or in a loop
-            if problem.stateValue(neighbor) < problem.stateValue(current) or stuck > STUCK_ITERATIONS:
+            if problem.stateValue(neighbor) < problem.stateValue(current) or stuck > stuckIterations:
                 print(current, problem.stateValue(current))
                 return current
 
@@ -114,11 +113,25 @@ class NQueens:
 
 
 class TravellingSalesman:
-    def __init__(self, N):
+    def __init__(self, N, size=100):
         self.N = N
+        self.state = []
+
+        for i in range(N):
+            # Check that every city is different
+            city = (rnd.randint(0, size), rnd.randint(0, size))
+            while city in self.state:
+                city = (rnd.randint(0, size), rnd.randint(0, size))
+
+            self.state.append(city)
+
+        print(self.state)
 
     def initialState(self):
-        return
+        return self.state
+
+    def sistanceBetweenCities(self, city1, city2):
+        return math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
 
     def randomNeighbor(self, state):
         return
@@ -128,4 +141,5 @@ class TravellingSalesman:
 
 
 if __name__ == '__main__':
-    SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(20))
+    TravellingSalesman(10, 10)
+    # SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(20))
