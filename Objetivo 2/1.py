@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import random as rnd
+import matplotlib.pyplot as plt
 
 
 class SearchAlgorithms:
@@ -125,7 +126,11 @@ class TravellingSalesman:
 
             self.state.append(city)
 
-        print(self.state)
+        for i in range(self.N):
+            plt.scatter(self.state[i][0], self.state[i][1])
+            #plt.plot(self.state[i][0], self.state[i][1])
+            plt.annotate(i+1, (self.state[i][0], self.state[i][1]))
+        plt.show()
 
     def initialState(self):
         return self.state
