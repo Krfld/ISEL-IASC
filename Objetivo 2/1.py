@@ -6,14 +6,13 @@ import matplotlib.pyplot as plt
 
 class SearchAlgorithms:
     def stochasticHillClimbing(problem, stuckIterations=10):
-
         current = problem.initialState()
         oldNeighbor = current.copy()
 
         stuck = 0
         while True:
             neighbor = problem.bestNeighbor(current)  # Obtain best neighbor state from current one
-            print(neighbor, current, '|', problem.stateValue(neighbor), problem.stateValue(current))
+            # print(neighbor, current, '|', problem.stateValue(neighbor), problem.stateValue(current))
 
             # Check if it's stuck in an infinite loop
             if np.array_equal(neighbor, oldNeighbor):
@@ -21,24 +20,31 @@ class SearchAlgorithms:
             else:
                 stuck = 0
 
-            # Return state if it's stuck in a local maximum or in a loop
+            # Return state if it's stuck in a maximum (local or global) or in a loop
             if problem.stateValue(neighbor) < problem.stateValue(current) or stuck > stuckIterations:
-                print(current, problem.stateValue(current))
+                # problem.printState(current)
                 return current
 
             oldNeighbor = current.copy()
             current = neighbor.copy()
 
-    def hillClimbingWithRandomRestart(problem):
-        solution = None
+    def hillClimbingWithRandomRestart(problem, iterations=10):
+        bestSolution = SearchAlgorithms.stochasticHillClimbing(problem)
+        bestValue = problem.stateValue(bestSolution)
 
-        while True:
+        for i in range(iterations):
             # Obtain solution from stochastic hill climbing
             solution = SearchAlgorithms.stochasticHillClimbing(problem)
-            # Return solution state if it's in a global maximum
-            if problem.stateValue(solution) == problem.maxValue:
-                print('Solution state:', solution, '|', problem.stateValue(solution))
-                return solution
+
+            # If solution is better than the best one
+            solutionValue = problem.stateValue(solution)
+            if solutionValue > bestValue:
+                bestSolution = solution.copy()
+                bestValue = solutionValue
+
+        # Return best solution state after iterations
+        problem.printState(bestSolution, 'Solution state:')
+        return bestSolution
 
     def simulatedAnnealing(problem, schedule):
         current = problem.initialState()
@@ -65,7 +71,10 @@ class NQueens:
         # self.state = np.array([i for i in range(1, self.N+1)])
         # np.random.shuffle(self.state)
         self.state = np.array([rnd.randint(1, self.N) for i in range(self.N)])
-        print('Start state:', self.state)
+        self.printState(self.state, 'Start state:')
+
+    def printState(self, state, msg=''):
+        print(msg, state, '|', self.stateValue(state))
 
     def initialState(self):
         return self.state
@@ -73,8 +82,8 @@ class NQueens:
     def randomNeighbor(self, state):
         col = rnd.randint(0, self.N-1)
         row = state[col]
-        newRow = rnd.randint(1, self.N)
 
+        newRow = rnd.randint(1, self.N)
         while newRow == row:
             newRow = rnd.randint(1, self.N)
 
@@ -83,7 +92,9 @@ class NQueens:
 
     def bestNeighbor(self, state):
         bestState = state.copy()
+
         bestState[0] = self.N+1 - bestState[0]  # Change the first queen
+
         bestValue = self.stateValue(bestState)
 
         cols = np.array([i for i in range(self.N)])
@@ -103,7 +114,6 @@ class NQueens:
 
     def stateValue(self, state):
         value = 0
-
         for i in range(self.N - 1):
             for j in range(i+1, self.N):
                 if state[j] == state[i] or abs(state[j] - state[i]) == j - i:
@@ -116,37 +126,89 @@ class NQueens:
 class TravellingSalesman:
     def __init__(self, N, size=100):
         self.N = N
-        self.state = []
+        self.state = np.array([], dtype=int)
 
         for i in range(N):
             # Check that every city is different
-            city = (rnd.randint(0, size), rnd.randint(0, size))
+            city = [rnd.randint(0, size), rnd.randint(0, size)]
             while city in self.state:
-                city = (rnd.randint(0, size), rnd.randint(0, size))
+                city = [rnd.randint(0, size), rnd.randint(0, size)]
 
-            self.state.append(city)
+            self.state = np.append(self.state, city)
 
-        print('Start state:', self.state)
+        self.state = np.reshape(self.state, (N, 2))
+        self.printState(self.state, 'Start state:')
 
-        plt.plot(*zip(*self.state), 'o-')
+    def printState(self, state, msg=''):
+        #print(msg, state, '|', self.stateValue(state))
+
+        plt.figure()
+        plt.title(msg)
+        plt.plot(*zip(*state), 'o-')
         for i in range(self.N):
-            plt.annotate(i+1, (self.state[i][0], self.state[i][1]))
-        plt.show()
+            plt.annotate(f'  {i+1}', (state[i][0], state[i][1]))
 
     def initialState(self):
+        np.random.shuffle(self.state)
         return self.state
 
-    def sistanceBetweenCities(self, city1, city2):
+    def distanceBetweenCities(self, city1, city2):
         return math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
 
     def randomNeighbor(self, state):
-        return
+        choices = np.array([i for i in range(self.N)])
+        np.random.shuffle(choices)
+
+        city1Index = choices.pop(0)
+        city2Index = choices.pop(0)
+
+        # Swap cities
+        tempCity = state[city1Index]
+        state[city1Index] = state[city2Index]
+        state[city2Index] = tempCity
+
+        return state
+
+    def bestNeighbor(self, state):
+        bestState = state.copy()
+
+        # Swap first 2 cities
+        tempCity = bestState[0].copy()
+        bestState[0] = bestState[1].copy()
+        bestState[1] = tempCity
+
+        bestValue = self.stateValue(bestState)
+
+        indexes = np.array([i for i in range(self.N-1)])
+        np.random.shuffle(indexes)
+
+        for i in indexes:
+            for j in range(i+1, self.N):
+                newState = state.copy()
+
+                # Swap cities
+                tempCity = newState[i].copy()
+                newState[i] = newState[j].copy()
+                newState[j] = tempCity
+
+                newValue = self.stateValue(newState)
+                if newValue >= bestValue:
+                    bestState = newState.copy()
+                    bestValue = newValue
+
+        return bestState
 
     def stateValue(self, state):
+        totalDistance = 0
+        for i in range(self.N-1):
+            totalDistance += self.distanceBetweenCities(state[i], state[i+1])
 
-        return
+        totalDistance *= -1
+        return totalDistance
 
 
 if __name__ == '__main__':
-    TravellingSalesman(10)
     # SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(20))
+    SearchAlgorithms.hillClimbingWithRandomRestart(TravellingSalesman(20))
+
+    plt.show()
