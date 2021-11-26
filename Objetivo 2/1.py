@@ -30,7 +30,7 @@ class SearchAlgorithms:
             oldNeighbor = current.copy()
             current = neighbor.copy()
 
-    def hillClimbingWithRandomRestart(problem, iterations=10):
+    def hillClimbingWithRandomRestart(problem, iterations=20):
         bestSolution = SearchAlgorithms.stochasticHillClimbing(problem)
         bestValue = problem.stateValue(bestSolution)
         for i in range(iterations):
@@ -82,7 +82,7 @@ class NQueens:
         plt.figure()
         plt.title(msg)
         plt.imshow(board)
-        plt.axis(False)
+        # plt.axis(False)
 
     def initialState(self):
         # Always return the same start state
