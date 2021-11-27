@@ -92,7 +92,7 @@ class NQueens:
 
     def initialState(self):
         # Always return the same start state
-        return self.state
+        return self.state.copy()
 
     def randomNeighbor(self, state):
         col = rnd.randint(0, len(state)-1)
@@ -144,20 +144,24 @@ class NQueens:
 
 
 # %%
+SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(10))
+
+
+# %%
 class TravellingSalesman:
     def __init__(self, N, size=100):
-        self.cities = np.array([], dtype=int)
+        self.state = np.array([], dtype=int)
 
         for i in range(N):
             # Check that every city is different
             city = [rnd.randint(0, size), rnd.randint(0, size)]
-            while city in self.cities:
+            while city in self.state:
                 city = [rnd.randint(0, size), rnd.randint(0, size)]
 
-            self.cities = np.append(self.cities, city)
-            self.cities = np.reshape(self.cities, (i+1, 2))
+            self.state = np.append(self.state, city)
+            self.state = np.reshape(self.state, (i+1, 2))
 
-        self.printState(self.cities, 'Cities:', False)
+        self.printState(self.state, 'Cities:', False)
 
     def printState(self, state, msg='', showPath=True):
         # print(msg, state, '|', self.stateValue(state))
@@ -166,6 +170,11 @@ class TravellingSalesman:
         plt.title(msg)
 
         if showPath:
+            # Append first city at the end
+            length = len(state)
+            state = np.append(state, state[0])
+            state = np.reshape(state, (length+1, 2))
+
             plt.plot(*zip(*state), 'o-')
             for i in range(len(state)-1):
                 plt.annotate(f'  {i+1}', (state[i][0], state[i][1]))
@@ -176,65 +185,55 @@ class TravellingSalesman:
 
     def initialState(self):
         # Always return the same cities with different order
-        np.random.shuffle(self.cities)
-
-        length = len(self.cities)
-        state = np.append(self.cities, self.cities[0])
-        state = np.reshape(state, (length+1, 2))
-
-        return state
+        np.random.shuffle(self.state)
+        return self.state.copy()
 
     def distanceBetweenCities(self, city1, city2):
-        # Obtain distance between two cities
+        # Calculate distance between two cities
         return math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
 
     def randomNeighbor(self, state):
-        midState = state[:-1]
+        randomState = state.copy()
 
         # Choose two random cities
-        choices = np.array([i for i in range(len(midState))])
+        choices = np.array([i for i in range(len(state))])
         np.random.shuffle(choices)
 
-        index = rnd.randint(0, len(midState) - 1)
+        index = rnd.randint(0, len(state) - 1)
         city1Index = choices[index]
-        city2Index = choices[len(midState)-1 - index]
+        city2Index = choices[len(state)-1 - index]
 
         # Swap cities
-        tempCity = midState[city1Index].copy()
-        midState[city1Index] = midState[city2Index].copy()
-        midState[city2Index] = tempCity
+        tempCity = randomState[city1Index].copy()
+        randomState[city1Index] = randomState[city2Index].copy()
+        randomState[city2Index] = tempCity
 
-        state[len(state)-1] = state[0]
-        return state.copy()
+        return randomState
 
     def bestNeighbor(self, state):
         bestState = state.copy()
 
-        bestMidState = bestState[:-1]
-
         # Swap second two cities to guarantee that the bestState will always be different than the original state
-        tempCity = bestMidState[1].copy()
-        bestMidState[1] = bestMidState[2].copy()
-        bestMidState[2] = tempCity
+        tempCity = bestState[1].copy()
+        bestState[1] = bestState[2].copy()
+        bestState[2] = tempCity
 
         bestValue = self.stateValue(bestState)
 
         # Randomize order to find the best neighbor
-        indexes = np.array([i for i in range(len(bestMidState) - 1)])
+        indexes = np.array([i for i in range(len(state) - 1)])
         np.random.shuffle(indexes)
 
         for i in indexes:
-            for j in range(i+1, len(bestMidState)):
+            for j in range(i+1, len(state)):
                 newState = state.copy()
-                newMidState = newState[:-1]
 
                 # Swap cities
-                tempCity = newMidState[i].copy()
-                newMidState[i] = newMidState[j].copy()
-                newMidState[j] = tempCity
+                tempCity = newState[i].copy()
+                newState[i] = newState[j].copy()
+                newState[j] = tempCity
 
                 # If new state is better than the current best
-                newState[len(newState)-1] = newState[0]
                 newValue = self.stateValue(newState)
                 if newValue > bestValue:
                     bestState = newState.copy()
@@ -243,16 +242,17 @@ class TravellingSalesman:
         return bestState
 
     def stateValue(self, state):
+        # Append first city at the end
+        length = len(state)
+        state = np.append(state, state[0])
+        state = np.reshape(state, (length+1, 2))
+
         totalDistance = 0
         for i in range(len(state)-1):
             totalDistance += self.distanceBetweenCities(state[i], state[i+1])
 
         totalDistance *= -1
         return totalDistance
-
-
-# %%
-SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(10))
 
 
 # %%
