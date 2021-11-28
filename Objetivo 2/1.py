@@ -44,7 +44,7 @@ class SearchAlgorithms:
                 bestValue = solutionValue
 
         # Return best solution state after iterations
-        problem.printState(bestSolution, 'Solution state:')
+        problem.printState(bestSolution, 'Hill climbing')
         return bestSolution
 
     def simulatedAnnealing(problem, schedule):
@@ -54,8 +54,8 @@ class SearchAlgorithms:
             t += 1
             T = schedule(t)
 
-            if T == 0:
-                problem.printState(current, 'Solution state:')
+            if T <= 0:
+                problem.printState(current, 'Simulated annealing')
                 return current
 
             neighbor = problem.randomNeighbor(current)
@@ -66,7 +66,9 @@ class SearchAlgorithms:
                 current = neighbor.copy()
 
     def schedule(time):
-        return 100 * 0.9**time
+        T0 = 100
+        alpha = 0.99
+        return T0 * alpha ** time
 
 
 # %%
@@ -76,7 +78,7 @@ class NQueens:
         # self.state = np.array([i for i in range(1, N+1)])
         # np.random.shuffle(self.state)
         self.state = np.array([rnd.randint(1, N) for i in range(N)])
-        self.printState(self.state, 'Initial state:')
+        self.printState(self.state, 'Initial board')
 
     def printState(self, state, msg=''):
         # print(msg, state, '|', self.stateValue(state))
@@ -84,7 +86,7 @@ class NQueens:
         # Build matrix to plot
         board = np.array([[1 if j+1 == state[i] else 0 for j in range(len(state))] for i in range(len(state))])
         plt.figure()
-        plt.title(msg)
+        plt.title(msg + '\nAttacks: ' + str(self.stateValue(state) * -1))
         plt.imshow(board)
         # plt.axis(False)
 
@@ -95,15 +97,19 @@ class NQueens:
         return self.state.copy()
 
     def randomNeighbor(self, state):
-        col = rnd.randint(0, len(state)-1)
-        row = state[col]
+        randomState = state.copy()
 
-        newRow = rnd.randint(1, len(state))
-        while newRow == row:
-            newRow = rnd.randint(1, len(state))
+        # Choose random index
+        index = rnd.randint(0, len(state)-1)
+        pos = randomState[index]
 
-        state[col] = newRow
-        return state.copy()
+        # Move queen to a random position
+        newPos = rnd.randint(1, len(state))
+        while newPos == pos:
+            newPos = rnd.randint(1, len(state))
+
+        randomState[index] = newPos
+        return randomState
 
     def bestNeighbor(self, state):
         bestState = state.copy()
@@ -114,15 +120,15 @@ class NQueens:
         bestValue = self.stateValue(bestState)
 
         # Randomize order to find the best neighbor
-        cols = np.array([i for i in range(len(state))])
-        np.random.shuffle(cols)
+        indexes = np.array([i for i in range(len(state))])
+        np.random.shuffle(indexes)
 
-        for col in cols:
+        for index in indexes:
             newState = state.copy()
-            for row in range(1, len(state)+1):
-                if row != state[col]:
+            for pos in range(1, len(state)+1):
+                if pos != state[index]:
                     # Move queen
-                    newState[col] = row
+                    newState[index] = pos
 
                     # If the new state is better than the current best
                     newValue = self.stateValue(newState)
@@ -144,7 +150,9 @@ class NQueens:
 
 
 # %%
-SearchAlgorithms.hillClimbingWithRandomRestart(NQueens(10))
+nq = NQueens(10)
+SearchAlgorithms.hillClimbingWithRandomRestart(nq)
+SearchAlgorithms.simulatedAnnealing(nq, SearchAlgorithms.schedule)
 
 
 # %%
@@ -161,15 +169,15 @@ class TravellingSalesman:
             self.state = np.append(self.state, city)
             self.state = np.reshape(self.state, (i+1, 2))
 
-        self.printState(self.state, 'Cities:', False)
+        self.printState(self.state, 'Cities', False)
 
     def printState(self, state, msg='', showPath=True):
         # print(msg, state, '|', self.stateValue(state))
 
         plt.figure()
-        plt.title(msg)
 
         if showPath:
+            plt.title(msg + '\nDistance: ' + str(self.stateValue(state) * -1))
             # Append first city at the end
             length = len(state)
             state = np.append(state, state[0])
@@ -179,6 +187,7 @@ class TravellingSalesman:
             for i in range(len(state)-1):
                 plt.annotate(f'  {i+1}', (state[i][0], state[i][1]))
         else:
+            plt.title(msg)
             plt.plot(*zip(*state), 'o')
 
         plt.show()
@@ -256,7 +265,9 @@ class TravellingSalesman:
 
 
 # %%
-SearchAlgorithms.hillClimbingWithRandomRestart(TravellingSalesman(20))
+ts = TravellingSalesman(20)
+SearchAlgorithms.hillClimbingWithRandomRestart(ts)
+SearchAlgorithms.simulatedAnnealing(ts, SearchAlgorithms.schedule)
 
 
 # %%
