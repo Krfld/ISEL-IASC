@@ -268,7 +268,3 @@ class TravellingSalesman:
 ts = TravellingSalesman(20)
 SearchAlgorithms.hillClimbingWithRandomRestart(ts)
 SearchAlgorithms.simulatedAnnealing(ts, SearchAlgorithms.schedule)
-
-
-# %%
-# SearchAlgorithms.simulatedAnnealing(TravellingSalesman(10), SearchAlgorithms.schedule)
