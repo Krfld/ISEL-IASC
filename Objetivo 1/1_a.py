@@ -1,3 +1,4 @@
+# %%
 import numpy as np
 import matplotlib.pyplot as plt
 from keras.models import Sequential
@@ -5,12 +6,12 @@ from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
 
-EPOCHS = 1000
+EPOCHS = 10000
 
 HL_NEURONS = 2
 LR = [0.05, 0.25, 0.5, 1, 2]
 
-ACTIVATION = activations.sigmoid
+ACTIVATION = activations.tanh
 MOMENTUUM = 0
 SHUFFLE = True
 
@@ -50,3 +51,5 @@ for k in range(len(LR)):
             # plt.savefig('last.png')
 
 plt.show()
+
+# %%
