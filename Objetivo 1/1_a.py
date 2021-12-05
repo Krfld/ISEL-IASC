@@ -8,7 +8,7 @@ from keras import optimizers
 
 EPOCHS = 1000
 
-HL_NEURONS = 4
+HL_NEURONS = 8
 LR = [0.05, 0.25, 0.5, 1, 2]
 
 ACTIVATION = activations.sigmoid
@@ -50,6 +50,6 @@ for k in range(len(LR)):
             plots[i, j].plot([LOSS_TARGET for i in range(EPOCHS)], 'o')
             # plt.savefig('last.png')
 
-plt.show()
+    plt.show()
 
 # %%
