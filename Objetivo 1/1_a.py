@@ -6,12 +6,12 @@ from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
 
-EPOCHS = 10000
+EPOCHS = 1000
 
-HL_NEURONS = 2
+HL_NEURONS = 4
 LR = [0.05, 0.25, 0.5, 1, 2]
 
-ACTIVATION = activations.tanh
+ACTIVATION = activations.sigmoid
 MOMENTUUM = 0
 SHUFFLE = True
 
