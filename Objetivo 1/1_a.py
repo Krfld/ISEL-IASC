@@ -11,7 +11,7 @@ HL_NEURONS = 2
 LR = np.array([0.05, 0.25, 0.5, 1, 2])
 
 ACTIVATION = activations.tanh
-MOMENTUM = 0
+MOMENTUM = 1
 SHUFFLE = False
 
 LOSS_TARGET = 0.1
@@ -45,5 +45,7 @@ for k in range(len(LR)):
 
             plots[i, j].plot(np.array(history.history['loss']), 'o')
             plots[i, j].plot(loss_target, 'o')
+
+    # plt.savefig(f'Objetivo 1/figures/HL-{HL_NEURONS}_LR-{LR[k]}_M-{MOMENTUM}_S-{SHUFFLE}.png')
 
 plt.show()
