@@ -16,8 +16,8 @@ SHUFFLE = False  # False
 
 LOSS_TARGET = 0.1
 
-training_data = np.array([[-1, -1], [-1, 1], [1, -1], [1, 1]])
-target_data = np.array([[-1], [1], [1], [-1]])
+training_data = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+target_data = np.array([[0], [1], [1], [0]])
 
 loss_target = np.array([LOSS_TARGET for i in range(EPOCHS)])
 
