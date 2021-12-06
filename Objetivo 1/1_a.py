@@ -11,7 +11,7 @@ HL_NEURONS = 2
 LR = np.array([0.05, 0.25, 0.5, 1, 2])
 
 ACTIVATION = activations.tanh
-MOMENTUM = 1
+MOMENTUM = 0.5
 SHUFFLE = False
 
 LOSS_TARGET = 0.1
