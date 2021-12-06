@@ -5,14 +5,14 @@ from keras.layers.core import Dense
 from keras import activations
 from keras import optimizers
 
-EPOCHS = 1000
+EPOCHS = 1000  # 1000
 
-HL_NEURONS = 2
+HL_NEURONS = 2  # 2
 LR = np.array([0.05, 0.25, 0.5, 1, 2])
 
-ACTIVATION = activations.tanh
-MOMENTUM = 0.5
-SHUFFLE = False
+ACTIVATION = activations.tanh  # Tanh
+MOMENTUM = 0.5  # Best - 0.5
+SHUFFLE = False  # False
 
 LOSS_TARGET = 0.1
 
