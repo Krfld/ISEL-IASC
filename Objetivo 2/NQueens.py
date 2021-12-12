@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 
 
 class NQueens:
-    def __init__(self, N):
-        self.maxValue = 0
+    def __init__(self, N, printState=True):
+        self.N = N
         # self.state = np.array([i for i in range(1, N+1)])
         # np.random.shuffle(self.state)
         self.state = np.array([rnd.randint(1, N) for i in range(N)])
-        self.printState(self.state, 'Initial board')
+        if printState:
+            self.printState(self.state, 'Initial board')
 
     def printState(self, state, msg=''):
         # print(msg, state, '|', self.stateValue(state))
@@ -79,3 +80,18 @@ class NQueens:
 
         value *= -1
         return value
+
+    ### Genetic algorithm ###
+
+    def reproduce(self, x, y):
+        c = rnd.randint(1, len(x)-1)  # len(x) = self.N
+        return np.append(x[:c], y[c:])
+
+    def population(self, populationSize=50):
+        population = np.array([NQueens(self.N, printState=False).initialState() for i in range(populationSize)])
+        population = np.reshape(population, (populationSize, self.N))
+        return population
+
+    def fitnessFunction(self, element):
+        value = self.stateValue(element)*-1
+        return int(1000/(value+1))

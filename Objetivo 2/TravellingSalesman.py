@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 
 class TravellingSalesman:
-    def __init__(self, N, size=100):
+    def __init__(self, N, size=100, printState=True):
+        self.N = N
         self.state = np.array([], dtype=int)
 
         for i in range(N):
@@ -17,7 +18,8 @@ class TravellingSalesman:
             self.state = np.append(self.state, city)
             self.state = np.reshape(self.state, (i+1, 2))
 
-        self.printState(self.state, 'Cities', False)
+        if printState:
+            self.printState(self.state, 'Cities', False)
 
     def printState(self, state, msg='', showPath=True):
         # print(msg, state, '|', self.stateValue(state))
@@ -105,3 +107,23 @@ class TravellingSalesman:
 
         totalDistance *= -1
         return totalDistance
+
+    ### Genetic algorithm ###
+
+    def reproduce(self, x, y):
+        c = rnd.randint(1, len(x)-1)
+
+        # No repeated elements
+        child = np.array([i for i in x if i not in y[c:]])
+        child = np.append(child, y[c:])
+        child = np.reshape(child, (len(x), 2))
+        return child
+
+    def population(self, populationSize=2):
+        population = np.array([TravellingSalesman(self.N, printState=False).initialState() for i in range(populationSize)])
+        population = np.reshape(population, (populationSize, self.N*2))
+        return population
+
+    def fitnessFunction(self, element):
+        value = self.stateValue(element)*-1
+        return int(1000/(value+1))
