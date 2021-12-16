@@ -1,27 +1,25 @@
 import math
-import numpy as np
 import random as rnd
 import matplotlib.pyplot as plt
 
 
 class TravellingSalesman:
-    def __init__(self, N, size=100, printState=True):
-        self.N = N
-        self.state = np.array([], dtype=int)
+    def __init__(self, N: int, size: int = 100, printState: bool = True):
+        self.state = []
 
         for i in range(N):
             # Check that every city is different
-            city = [rnd.randint(0, size), rnd.randint(0, size)]
+            city = (rnd.randint(0, size), rnd.randint(0, size))
             while city in self.state:
-                city = [rnd.randint(0, size), rnd.randint(0, size)]
+                city = (rnd.randint(0, size), rnd.randint(0, size))
 
-            self.state = np.append(self.state, city)
-            self.state = np.reshape(self.state, (i+1, 2))
+            self.state.append(city)
+            # self.state = np.reshape(self.state, (i+1, 2))
 
         if printState:
             self.printState(self.state, 'Cities', False)
 
-    def printState(self, state, msg='', showPath=True):
+    def printState(self, state: list, msg: str = '', showPath: bool = True):
         # print(msg, state, '|', self.stateValue(state))
 
         plt.figure()
@@ -30,9 +28,9 @@ class TravellingSalesman:
             plt.title(msg + '\nDistance: ' + str(int(self.stateValue(state) * -1)))
 
             # Append first city at the end
-            length = len(state)
-            state = np.append(state, state[0])
-            state = np.reshape(state, (length+1, 2))
+            # length = len(state)
+            state.append(state[0])
+            # state = np.reshape(state, (length+1, 2))
 
             plt.plot(*zip(*state), 'o-')
             for i in range(len(state)-1):
@@ -45,19 +43,19 @@ class TravellingSalesman:
 
     def initialState(self):
         # Always return the same cities with different order
-        np.random.shuffle(self.state)
+        rnd.shuffle(self.state)
         return self.state.copy()
 
-    def distanceBetweenCities(self, city1, city2):
+    def distanceBetweenCities(self, city1: tuple, city2: tuple):
         # Calculate distance between two cities
         return math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
 
-    def randomNeighbor(self, state):
+    def randomNeighbor(self, state: list):
         randomState = state.copy()
 
         # Choose two random cities
-        choices = np.array([i for i in range(len(state))])
-        np.random.shuffle(choices)
+        choices = [i for i in range(len(state))]
+        rnd.shuffle(choices)
 
         index = rnd.randint(0, len(state) - 1)
         city1Index = choices[index]
@@ -68,7 +66,7 @@ class TravellingSalesman:
 
         return randomState
 
-    def bestNeighbor(self, state):
+    def bestNeighbor(self, state: list):
         bestState = state.copy()
 
         # Swap second two cities to guarantee that the bestState will always be different than the original state
@@ -77,8 +75,8 @@ class TravellingSalesman:
         bestValue = self.stateValue(bestState)
 
         # Randomize order to find the best neighbor
-        indexes = np.array([i for i in range(len(state) - 1)])
-        np.random.shuffle(indexes)
+        indexes = [i for i in range(len(state) - 1)]
+        rnd.shuffle(indexes)
 
         for i in indexes:
             for j in range(i+1, len(state)):
@@ -95,33 +93,36 @@ class TravellingSalesman:
 
         return bestState
 
-    def stateValue(self, state):
+    def stateValue(self, state: list):
         # Append first city at the end
-        length = len(state)
-        state = np.append(state, state[0])
-        state = np.reshape(state, (length+1, 2))
+        # length = len(state)
+        newState = state.copy()
+        newState.append(state[0])
+        # state = np.reshape(state, (length+1, 2))
 
         totalDistance = 0
-        for i in range(len(state)-1):
-            totalDistance += self.distanceBetweenCities(state[i], state[i+1])
+        for i in range(len(newState)-1):
+            totalDistance += self.distanceBetweenCities(newState[i], newState[i+1])
 
         totalDistance *= -1
         return totalDistance
 
     ### Genetic algorithm ###
 
-    def reproduce(self, x, y):
+    def reproduce(self, x: list, y: list):
         c = rnd.randint(1, len(x)-1)
 
         # No repeated elements
-        child = np.array([i for i in x if i not in y[c:]])
-        child = np.append(child, y[c:])
-        child = np.reshape(child, (len(x), 2))
+        child = [i for i in x if i not in y[c:]]
+        for i in y[c:]:
+            child.append(i)
+        # print(child)
+        # child = np.reshape(child, (len(x), 2))
         return child
 
-    def population(self, populationSize=2):
-        population = np.array([TravellingSalesman(self.N, printState=False).initialState() for i in range(populationSize)])
-        population = np.reshape(population, (populationSize, self.N*2))
+    def population(self, populationSize=50):
+        population = [self.initialState() for i in range(populationSize)]
+        # population = np.reshape(population, (populationSize, self.N*2))
         return population
 
     def fitnessFunction(self, element):

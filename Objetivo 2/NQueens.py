@@ -1,22 +1,20 @@
-import numpy as np
 import random as rnd
 import matplotlib.pyplot as plt
 
 
 class NQueens:
-    def __init__(self, N, printState=True):
-        self.N = N
+    def __init__(self, N: int, printState: bool = True):
         # self.state = np.array([i for i in range(1, N+1)])
         # np.random.shuffle(self.state)
-        self.state = np.array([rnd.randint(1, N) for i in range(N)])
+        self.state = [rnd.randint(1, N) for i in range(N)]
         if printState:
             self.printState(self.state, 'Initial board')
 
-    def printState(self, state, msg=''):
+    def printState(self, state: list, msg: str = ''):
         # print(msg, state, '|', self.stateValue(state))
 
         # Build matrix to plot
-        board = np.array([[1 if j+1 == state[i] else 0 for j in range(len(state))] for i in range(len(state))])
+        board = [[1 if j+1 == state[i] else 0 for j in range(len(state))] for i in range(len(state))]
 
         plt.figure()
         plt.title(msg + '\nAttacks: ' + str(self.stateValue(state) * -1))
@@ -27,9 +25,10 @@ class NQueens:
 
     def initialState(self):
         # Always return the same start state
+        rnd.shuffle(self.state)
         return self.state.copy()
 
-    def randomNeighbor(self, state):
+    def randomNeighbor(self, state: list):
         randomState = state.copy()
 
         # Choose random index
@@ -44,7 +43,7 @@ class NQueens:
         randomState[index] = newPos
         return randomState
 
-    def bestNeighbor(self, state):
+    def bestNeighbor(self, state: list):
         bestState = state.copy()
 
         # Change the first queen to guarantee that the bestState will always be different than the original state
@@ -53,8 +52,8 @@ class NQueens:
         bestValue = self.stateValue(bestState)
 
         # Randomize order to find the best neighbor
-        indexes = np.array([i for i in range(len(state))])
-        np.random.shuffle(indexes)
+        indexes = [i for i in range(len(state))]
+        rnd.shuffle(indexes)
 
         for index in indexes:
             newState = state.copy()
@@ -71,7 +70,7 @@ class NQueens:
 
         return bestState
 
-    def stateValue(self, state):
+    def stateValue(self, state: list):
         value = 0
         for i in range(len(state) - 1):
             for j in range(i+1, len(state)):
@@ -83,15 +82,18 @@ class NQueens:
 
     ### Genetic algorithm ###
 
-    def reproduce(self, x, y):
+    def reproduce(self, x: list, y: list):
         c = rnd.randint(1, len(x)-1)  # len(x) = self.N
-        return np.append(x[:c], y[c:])
+        out = x[:c]
+        for i in y[c:]:
+            out.append(i)
+        return out
 
     def population(self, populationSize=50):
-        population = np.array([NQueens(self.N, printState=False).initialState() for i in range(populationSize)])
-        population = np.reshape(population, (populationSize, self.N))
+        population = [self.initialState() for i in range(populationSize)]
+        # population = np.reshape(population, (populationSize, self.N))
         return population
 
-    def fitnessFunction(self, element):
+    def fitnessFunction(self, element: list):
         value = self.stateValue(element)*-1
         return int(1000/(value+1))
