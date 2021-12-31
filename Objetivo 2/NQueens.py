@@ -24,8 +24,7 @@ class NQueens:
         plt.show()
 
     def initialState(self):
-        # Always return the same start state
-        rnd.shuffle(self.state)
+        self.state = [rnd.randint(1, len(self.state)) for i in range(len(self.state))]
         return self.state.copy()
 
     def randomNeighbor(self, state: list):
@@ -84,12 +83,12 @@ class NQueens:
 
     def reproduce(self, x: list, y: list):
         c = rnd.randint(1, len(x)-1)  # len(x) = self.N
-        out = x[:c]
+        new = x[:c]
         for i in y[c:]:
-            out.append(i)
-        return out
+            new.append(i)
+        return new
 
-    def population(self, populationSize=50):
+    def population(self, populationSize: int = 50):
         population = [self.initialState() for i in range(populationSize)]
         # population = np.reshape(population, (populationSize, self.N))
         return population

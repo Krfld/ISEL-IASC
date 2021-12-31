@@ -120,11 +120,11 @@ class TravellingSalesman:
         # child = np.reshape(child, (len(x), 2))
         return child
 
-    def population(self, populationSize=50):
+    def population(self, populationSize: int = 50):
         population = [self.initialState() for i in range(populationSize)]
         # population = np.reshape(population, (populationSize, self.N*2))
         return population
 
-    def fitnessFunction(self, element):
+    def fitnessFunction(self, element: list):
         value = self.stateValue(element)*-1
-        return int(1000/(value+1))
+        return int(50/(value+1))
