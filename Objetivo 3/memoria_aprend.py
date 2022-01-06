@@ -1,14 +1,11 @@
-from abc import ABC, abstractmethod
 from estado import *
 from acao import *
 
 
 class MemoriaAprend:
-    @abstractmethod
     def atualizar(s: Estado, a: Acao, q: float):
         raise NotImplementedError
 
-    @abstractmethod
     def Q(s: Estado, a: Acao) -> float:
         raise NotImplementedError
 

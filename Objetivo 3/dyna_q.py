@@ -1,4 +1,4 @@
-from q_learning import *
+from aprend_ref import *
 from modelo_tr import *
 
 

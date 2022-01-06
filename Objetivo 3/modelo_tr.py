@@ -1,3 +1,5 @@
+import random as rnd
+
 from estado import *
 from acao import *
 
@@ -12,7 +14,7 @@ class ModeloTR:
         self.R[(s, a)] = r
 
     def amostrar(self):
-        s, a = choice(self.T.keys())
+        s, a = self.T.keys()[rnd.randint(0, len(self.T.keys()) - 1)]
         sn = self.T[(s, a)]
         r = self.R[(s, a)]
         return s, a, r, sn
