@@ -1,7 +1,5 @@
 import random as rnd
-
-from estado import *
-from acao import *
+from estado_acao import *
 
 
 class ModeloTR:

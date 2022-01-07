@@ -1,6 +1,5 @@
 import random as rnd
-
-from memoria_aprend import *
+from memoria_esparsa import *
 
 
 class SelAcao:
