@@ -120,7 +120,7 @@ class TravellingSalesman:
         # child = np.reshape(child, (len(x), 2))
         return child
 
-    def population(self, populationSize: int = 50):
+    def population(self, populationSize: int = 100):
         population = [self.initialState() for i in range(populationSize)]
         # population = np.reshape(population, (populationSize, self.N*2))
         return population

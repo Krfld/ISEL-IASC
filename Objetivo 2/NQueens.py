@@ -88,7 +88,7 @@ class NQueens:
             new.append(i)
         return new
 
-    def population(self, populationSize: int = 50):
+    def population(self, populationSize: int = 100):
         population = [self.initialState() for i in range(populationSize)]
         # population = np.reshape(population, (populationSize, self.N))
         return population

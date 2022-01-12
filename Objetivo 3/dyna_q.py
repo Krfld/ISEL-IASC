@@ -14,7 +14,7 @@ class AprendRef:
 
 
 class QLearning(AprendRef):
-    def aprender(self, s: Estado, a: Acao, r: float, sn: Estado, an: Acao = None):
+    def aprender(self, s: Estado, a: Acao, r: float, sn: Estado):  # , an: Acao = None
         an = self.sel_acao.max_acao(sn)
         qsa = self.mem_aprend.Q(s, a)
         qsnan = self.mem_aprend.Q(sn, an)
@@ -28,12 +28,12 @@ class DynaQ(QLearning):
         self.num_sim = num_sim
         self.modelo = ModeloTR()
 
-    def simular(self):  # f)
+    def simular(self):
         for i in range(self.num_sim):
             s, a, r, sn = self.modelo.amostrar()
-            super.aprender(s, a, r, sn)
+            super().aprender(s, a, r, sn)
 
     def aprender(self, s: Estado, a: Acao, r: float, sn: Estado):
-        super.aprender(s, a, r, sn)  # d)
+        super().aprender(s, a, r, sn)  # d)
         self.modelo.atualizar(s, a, r, sn)  # e)
         self.simular()  # f)

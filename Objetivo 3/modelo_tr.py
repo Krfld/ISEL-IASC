@@ -12,7 +12,7 @@ class ModeloTR:
         self.R[(s, a)] = r
 
     def amostrar(self):
-        s, a = self.T.keys()[rnd.randint(0, len(self.T.keys()) - 1)]
+        s, a = list(self.T)[rnd.randint(0, len(self.T.keys()) - 1)]
         sn = self.T[(s, a)]
         r = self.R[(s, a)]
         return s, a, r, sn

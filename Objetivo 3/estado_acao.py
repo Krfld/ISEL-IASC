@@ -9,6 +9,9 @@ class Estado:
     def __hash__(self) -> int:
         return hash((self.x, self.y))
 
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y})'
+
 
 class Acao:
     def __init__(self, dx: int, dy: int):
@@ -20,3 +23,6 @@ class Acao:
 
     def __hash__(self) -> int:
         return hash((self.dx, self.dy))
+
+    def __str__(self) -> str:
+        return f'({self.dx}, {self.dy})'
