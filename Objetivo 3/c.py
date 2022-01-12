@@ -1,17 +1,20 @@
+import sys
+import time
+import numpy as np
 import matplotlib.pyplot as plt
 from mecanismo_aprend_ref import *
 
 
-mundo = [[0, 0, 0, 0, 0, 0, 0, -1, 1],
-         [0, 0, -1, 0, 0, 0, 0, -1, 0],
-         [0, 0, -1, 0, 0, 0, 0, -1, 0],
-         [0, 0, -1, 0, 0, 0, 0, 0, 0],
-         [0, 0, 0, 0, 0, -1, 0, 0, 0],
-         [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+mundo: list[list[int]] = [[0, 0, 0, 0, 0, 0, 0, -1, 1],
+                          [0, 0, -1, 0, 0, 0, 0, -1, 0],
+                          [0, 0, -1, 0, 0, 0, 0, -1, 0],
+                          [0, 0, -1, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, -1, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
 
 class Mundo:
-    def __init__(self, mundo: list[list[int]], estadoInicial: Estado = Estado(0, 0), rMultiplicador: float = 1, custo: float = 0.01, mostrarGrafico: bool = True):
+    def __init__(self, mundo: list[list[int]], estadoInicial: Estado = Estado(0, 0), rMultiplicador: float = 10, custo: float = 0.01, mostrarGrafico: bool = True):
         self.mundo = mundo
         self.s = estadoInicial
         self.rMultiplicador = rMultiplicador
@@ -42,9 +45,14 @@ class Mundo:
     def mostrar(self):
         # print(self.s, self.movimentos)
 
+        posicao = [[x for x in y] for y in self.mundo]
+        posicao[self.s.y][self.s.x] = 11
+
+        sys.stdout.write(str(np.array(posicao))+'\n')
+        sys.stdout.flush()
+
+        time.sleep(0.05)
         if self.mostrarGrafico:
-            posicao = [[x for x in y] for y in self.mundo]
-            posicao[self.s.y][self.s.x] = 2
             plt.title("Movimentos: " + str(self.movimentos))
             plt.imshow(posicao)
             plt.pause(0.1)
