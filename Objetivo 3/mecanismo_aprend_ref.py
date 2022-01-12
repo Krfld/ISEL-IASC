@@ -6,7 +6,7 @@ class MecanismoAprendRef:
         self.acoes = acoes
         self.mem_aprend = MemoriaEsparsa()
         self.sel_acao = EGreedy(self.mem_aprend, self.acoes, 0.1)
-        self.aprend_ref = DynaQ(self.mem_aprend, self.sel_acao, 0.5, 0.95, 1000)
+        self.aprend_ref = DynaQ(self.mem_aprend, self.sel_acao, 0.7, 0.95, 1000)
 
     def aprender(self, s: Estado, a: Acao, r: float, sn: Estado):
         self.aprend_ref.aprender(s, a, r, sn)

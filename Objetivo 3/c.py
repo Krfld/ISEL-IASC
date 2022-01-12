@@ -1,30 +1,54 @@
-import sys
-import time
 import numpy as np
 import matplotlib.pyplot as plt
 from mecanismo_aprend_ref import *
 
 
-mundo: list[list[int]] = [[0, 0, 0, 0, 0, 0, 0, -1, 1],
-                          [0, 0, -1, 0, 0, 0, 0, -1, 0],
-                          [0, 0, -1, 0, 0, 0, 0, -1, 0],
-                          [0, 0, -1, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, -1, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0]]
-
-
 class Mundo:
-    def __init__(self, mundo: list[list[int]], estadoInicial: Estado = Estado(0, 0), rMultiplicador: float = 10, custo: float = 0.01, mostrarGrafico: bool = True):
-        self.mundo = mundo
-        self.s = estadoInicial
-        self.rMultiplicador = rMultiplicador
-        self.custo = custo
+    def __init__(self, nomeArquivo: str, multiplicadorReforço: float = 10, custoMover: float = 0.01, mostrarGrafico: bool = True):
+        # self.mundo: list[list[int]] = [[0, 0, 0, 0, 0, 0, 0, -1, 1],
+        #                                [0, 0, -1, 0, 0, -1, 0, -1, 0],
+        #                                [0, 0, -1, 0, 0, -1, 0, -1, 0],
+        #                                [0, 0, -1, 0, 0, -1, 0, 0, 0],
+        #                                [0, 0, 0, 0, 0, -1, 0, -1, -1],
+        #                                [0, 0, 0, 0, 0, -1, 0, 0, 0]]
+
+        self.mundo, self.s, self.alvo = self.carregarMundo(nomeArquivo)  # Obtem o mundo, o estado inicial e o alvo
+
+        self.multiplicadorReforço = multiplicadorReforço
+        self.custoMover = custoMover
         self.mostrarGrafico = mostrarGrafico
         self.movimentos = 0
 
         if self.mostrarGrafico:
             plt.ion()
-            plt.figure()
+
+    def carregarMundo(self, nomeArquivo: str) -> list[list[int]]:
+        with open(nomeArquivo, "r") as arquivo:
+            lines = arquivo.readlines()
+            mundo: list[list[int]] = np.zeros((len(lines), len(lines[0].removesuffix('\n'))), dtype=int)
+
+            estadoInicial = Estado(0, 0)
+            alvo = Estado(0, 0)
+
+            m = 0
+            for x in lines:
+                n = 0
+                for y in x[:-1]:
+                    if y.__eq__('O'):
+                        mundo[m][n] = -1
+                    elif y.__eq__('A'):
+                        mundo[m][n] = 2
+                        alvo = Estado(n, m)
+                    elif y.__eq__('>'):
+                        # mundo[m][n] = 1
+                        estadoInicial = Estado(n, m)
+                    n += 1
+                m += 1
+
+            print(mundo)
+            print(estadoInicial)
+            print(alvo)
+            return mundo, estadoInicial, alvo
 
     def estadoAtual(self) -> Estado:
         return self.s
@@ -35,37 +59,39 @@ class Mundo:
     def mover(self, a: Acao):
         sn = Estado(self.s.x + a.dx, self.s.y + a.dy)
 
-        if sn.x < 0 or sn.x >= len(self.mundo[0]) or sn.y < 0 or sn.y >= len(self.mundo):
-            return self.s, -self.rMultiplicador*2
+        # Verifica limites do mundo
+        # if sn.x < 0 or sn.x >= len(self.mundo[0]) or sn.y < 0 or sn.y >= len(self.mundo):
+        #     return self.s, -self.multiplicadorReforço*2
 
+        # Incrementa o numeros de movimentos
         self.movimentos += 1
+
+        # Obtem a informacao da posicao seguinte
         r = self.mundo[sn.y][sn.x]
-        return sn if not r < 0 else self.s, r*self.rMultiplicador - self.custo
+
+        # retorna o estado seguinte (verificando colisao) e o reforço de acordo com a posicao e o custo do movimento
+        return sn if r >= 0 else self.s, r * self.multiplicadorReforço - self.custoMover
 
     def mostrar(self):
-        # print(self.s, self.movimentos)
+        print(self.s, self.movimentos)
 
         posicao = [[x for x in y] for y in self.mundo]
-        posicao[self.s.y][self.s.x] = 11
+        posicao[self.s.y][self.s.x] = 1
 
-        sys.stdout.write(str(np.array(posicao))+'\n')
-        sys.stdout.flush()
-
-        time.sleep(0.05)
         if self.mostrarGrafico:
             plt.title("Movimentos: " + str(self.movimentos))
             plt.imshow(posicao)
             plt.pause(0.1)
+            plt.clf()
             plt.show()
 
 
 if __name__ == '__main__':
     #                         Right     | Left       | Up         | Down
     mar = MecanismoAprendRef([Acao(1, 0), Acao(-1, 0), Acao(0, -1), Acao(0, 1)])
-    estadoInicial = Estado(0, 2)
 
     while True:
-        m = Mundo(mundo, estadoInicial, mostrarGrafico=False)
+        m = Mundo("Objetivo 3/proj-obj3-amb/amb2.txt")
         while True:
             a = mar.selecionar_acao(m.estadoAtual())
             sn, r = m.mover(a)
@@ -74,6 +100,6 @@ if __name__ == '__main__':
             m.atualizarEstado(sn)
             m.mostrar()
 
-            if (sn == Estado(8, 0)):
+            if (sn == m.alvo):
                 break
         print(m.movimentos)
