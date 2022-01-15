@@ -91,7 +91,7 @@ if __name__ == '__main__':
     mar = MecanismoAprendRef([Acao(1, 0), Acao(-1, 0), Acao(0, -1), Acao(0, 1)])
 
     while True:
-        m = Mundo("Objetivo 3/proj-obj3-amb/amb2.txt")
+        m = Mundo("Objetivo 3/proj-obj3-amb/amb1.txt")
         while True:
             a = mar.selecionar_acao(m.estadoAtual())
             sn, r = m.mover(a)
