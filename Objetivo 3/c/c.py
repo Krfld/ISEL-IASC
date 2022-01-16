@@ -59,12 +59,12 @@ class Mundo:
     def mover(self, a: Acao):
         sn = Estado(self.s.x + a.dx, self.s.y + a.dy)
 
+        # Incrementa o numeros de movimentos
+        self.movimentos += 1
+
         # Verifica limites do mundo
         # if sn.x < 0 or sn.x >= len(self.mundo[0]) or sn.y < 0 or sn.y >= len(self.mundo):
         #     return self.s, -self.multiplicadorReforço*2
-
-        # Incrementa o numeros de movimentos
-        self.movimentos += 1
 
         # Obtem a informacao da posicao seguinte
         r = self.mundo[sn.y][sn.x]
@@ -76,7 +76,7 @@ class Mundo:
         print(self.s, self.movimentos)
 
         posicao = [[x for x in y] for y in self.mundo]
-        posicao[self.s.y][self.s.x] = 1
+        posicao[self.s.y][self.s.x] = 1  # Colocar o agente na posicao atual
 
         if self.mostrarGrafico:
             plt.title("Movimentos: " + str(self.movimentos))
