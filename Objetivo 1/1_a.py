@@ -21,6 +21,7 @@ target_data = np.array([[0], [1], [1], [0]])
 
 loss_target = np.array([LOSS_TARGET for i in range(EPOCHS)])
 
+# Generates 5 windows to show 10 plots (10 tries) for each learning rate to better see the nummber of iterations when passes the target loss
 for k in range(len(LR)):
     fig, plots = plt.subplots(2, 5)
     fig.suptitle(f'LR = {LR[k]} | MOMENTUM = {MOMENTUM}')
