@@ -62,7 +62,7 @@ class TravellingSalesman:
         city2Index = choices[len(state)-1 - index]
 
         # Swap cities
-        randomState[city1Index], randomState[city2Index] = randomState[city2Index].copy(), randomState[city1Index].copy()
+        randomState[city1Index], randomState[city2Index] = randomState[city2Index], randomState[city1Index]
 
         return randomState
 
@@ -70,7 +70,7 @@ class TravellingSalesman:
         bestState = state.copy()
 
         # Swap second two cities to guarantee that the bestState will always be different than the original state
-        bestState[1], bestState[2] = bestState[2].copy(), bestState[1].copy()
+        bestState[1], bestState[2] = bestState[2], bestState[1]
 
         bestValue = self.stateValue(bestState)
 
@@ -83,7 +83,7 @@ class TravellingSalesman:
                 newState = state.copy()
 
                 # Swap cities
-                newState[i], newState[j] = newState[j].copy(), newState[i].copy()
+                newState[i], newState[j] = newState[j], newState[i]
 
                 # If new state is better than the current best
                 newValue = self.stateValue(newState)
