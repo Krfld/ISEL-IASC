@@ -46,8 +46,8 @@ class Mundo:
                 m += 1
 
             print(mundo)
-            print(estadoInicial)
-            print(alvo)
+            print(estadoInicial, 'Start')
+            print(alvo, 'End')
             return mundo, estadoInicial, alvo
 
     def estadoAtual(self) -> Estado:
