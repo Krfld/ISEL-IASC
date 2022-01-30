@@ -17,6 +17,7 @@ class TravellingSalesman:
             # self.state = np.reshape(self.state, (i+1, 2))
 
         if printState:
+            print(self.state)
             self.printState(self.state, 'Cities', False)
 
     def printState(self, state: list, msg: str = '', showPath: bool = True):
@@ -41,7 +42,7 @@ class TravellingSalesman:
 
         plt.show()
 
-    def initialState(self):
+    def initialState(self) -> list[tuple]:
         # Always return the same cities with different order
         rnd.shuffle(self.state)
         return self.state.copy()
@@ -105,11 +106,11 @@ class TravellingSalesman:
             totalDistance += self.distanceBetweenCities(newState[i], newState[i+1])
 
         totalDistance *= -1
-        return totalDistance
+        return totalDistance  # returns negative value so that the best is closer to 0
 
     ### Genetic algorithm ###
 
-    def reproduce(self, x: list, y: list):
+    def reproduce(self, x: list, y: list) -> list[tuple]:
         c = rnd.randint(1, len(x)-1)
 
         # No repeated elements
@@ -120,11 +121,11 @@ class TravellingSalesman:
         # child = np.reshape(child, (len(x), 2))
         return child
 
-    def population(self, populationSize: int = 100):
+    def population(self, populationSize: int = 100) -> list[tuple]:
         population = [self.initialState() for i in range(populationSize)]
         # population = np.reshape(population, (populationSize, self.N*2))
         return population
 
     def fitnessFunction(self, element: list):
         value = self.stateValue(element)*-1
-        return int(50/(value+1))
+        return int(100000/(value+1))
