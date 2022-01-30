@@ -94,7 +94,7 @@ class NQueens:
         # population = np.reshape(population, (populationSize, self.N))
         return population
 
-    def fitnessFunction(self, element: list):
+    def fitnessFunction(self, element: list) -> float:
         value = self.stateValue(element)*-1
         # print(value)
-        return int(1000/(value+1))
+        return 1/(value+1)

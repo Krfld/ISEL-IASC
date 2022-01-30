@@ -126,6 +126,6 @@ class TravellingSalesman:
         # population = np.reshape(population, (populationSize, self.N*2))
         return population
 
-    def fitnessFunction(self, element: list):
+    def fitnessFunction(self, element: list) -> float:
         value = self.stateValue(element)*-1
-        return int(100000/(value+1))
+        return 1/(value+1)  # int(1000000/(value+1))
