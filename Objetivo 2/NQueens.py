@@ -70,7 +70,7 @@ class NQueens:
 
         return bestState
 
-    def stateValue(self, state: list):
+    def stateValue(self, state: list):  # number of collisions
         value = 0
         for i in range(len(state) - 1):
             for j in range(i+1, len(state)):
@@ -96,5 +96,4 @@ class NQueens:
 
     def fitnessFunction(self, element: list) -> float:
         value = self.stateValue(element)*-1
-        # print(value)
         return 1/(value+1)

@@ -94,7 +94,7 @@ class TravellingSalesman:
 
         return bestState
 
-    def stateValue(self, state: list):
+    def stateValue(self, state: list):  # distance between cities (returning to the first)
         # Append first city at the end
         # length = len(state)
         newState = state.copy()
