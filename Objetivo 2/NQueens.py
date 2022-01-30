@@ -47,6 +47,7 @@ class NQueens:
     def bestNeighbor(self, state: list):
         bestState = state.copy()
 
+        # Guarantee that returns a different state
         bestValue = -len(state)**2
 
         # Randomize order to find the best neighbor

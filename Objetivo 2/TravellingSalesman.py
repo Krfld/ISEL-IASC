@@ -70,10 +70,8 @@ class TravellingSalesman:
     def bestNeighbor(self, state: list):
         bestState = state.copy()
 
-        # Swap second two cities to guarantee that the bestState will always be different than the original state
-        #! bestState[1], bestState[2] = bestState[2], bestState[1]
-
-        bestValue = -len(state)**2  # self.stateValue(bestState)
+        # Guarantee that returns a different state
+        bestValue = -len(state)**4
 
         # Randomize order to find the best neighbor
         indexes = [i for i in range(len(state) - 1)]
