@@ -1,15 +1,16 @@
 import random as rnd
+from tkinter.tix import INTEGER
 import matplotlib.pyplot as plt
+from numpy import integer
 
 
 class NQueens:
     def __init__(self, N: int, printState: bool = True):
-        # self.state = np.array([i for i in range(1, N+1)])
-        # np.random.shuffle(self.state)
-        self.state = [rnd.randint(1, N) for i in range(N)]
-        if printState:
-            print(self.state)
-            self.printState(self.state, 'Initial board')
+        self.N = N
+        # self.state = [rnd.randint(1, N) for i in range(N)]
+        # if printState:
+        #     print(self.state)
+        #     self.printState(self.state, 'Initial board')
 
     def printState(self, state: list, msg: str = ''):
         # print(msg, state, '|', self.stateValue(state))
@@ -25,8 +26,8 @@ class NQueens:
         plt.show()
 
     def initialState(self):
-        self.state = [rnd.randint(1, len(self.state)) for i in range(len(self.state))]
-        return self.state.copy()
+        # Generate new random state
+        return [rnd.randint(1, self.N) for i in range(self.N)]
 
     def randomNeighbor(self, state: list):
         randomState = state.copy()
@@ -46,10 +47,7 @@ class NQueens:
     def bestNeighbor(self, state: list):
         bestState = state.copy()
 
-        # Change the first queen to guarantee that the bestState will always be different than the original state
-        bestState[0] = len(state)+1 - bestState[0]
-
-        bestValue = self.stateValue(bestState)
+        bestValue = -len(state)**2
 
         # Randomize order to find the best neighbor
         indexes = [i for i in range(len(state))]
@@ -70,7 +68,8 @@ class NQueens:
 
         return bestState
 
-    def stateValue(self, state: list):  # number of collisions
+    def stateValue(self, state: list):
+        # number of collisions
         value = 0
         for i in range(len(state) - 1):
             for j in range(i+1, len(state)):
@@ -83,7 +82,7 @@ class NQueens:
     ### Genetic algorithm ###
 
     def reproduce(self, x: list, y: list):
-        c = rnd.randint(1, len(x)-1)  # len(x) = self.N
+        c = rnd.randint(1, len(x)-1)
         new = x[:c]
         for i in y[c:]:
             new.append(i)
@@ -91,7 +90,6 @@ class NQueens:
 
     def population(self, populationSize: int = 100):
         population = [self.initialState() for i in range(populationSize)]
-        # population = np.reshape(population, (populationSize, self.N))
         return population
 
     def fitnessFunction(self, element: list) -> float:
