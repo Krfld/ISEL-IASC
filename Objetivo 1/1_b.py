@@ -11,7 +11,9 @@ from keras import models
 SAMPLES = 10000
 EPOCHS = 200
 
-LOAD_MODEL = False
+LOAD_MODEL = True
+
+PATH = 'Objetivo 1/models/1_b/'
 
 a = np.array([1, 1, 1, 1,
               1, 0, 0, 1,
@@ -44,44 +46,46 @@ def get_train_data():
 
     np.random.shuffle(train_data)
 
-    #print('Training', train_data, len(train_data))
+    # print('Training', train_data, len(train_data))
     return train_data
 
 
 def __main__():
+    #
+    # Train data
+    #
+    train_data = get_train_data()
+
+    #
+    # Target data
+    #
+    target_data = np.array([], dtype=int)
+    for data in train_data:
+        if np.array_equal(data, a):
+            target_data = np.append(target_data, [1, 0, 0, 0])
+        elif np.array_equal(data, b):
+            target_data = np.append(target_data, [0, 1, 0, 0])
+        elif np.array_equal(data, c):
+            target_data = np.append(target_data, [0, 0, 1, 0])
+        elif np.array_equal(data, d):
+            target_data = np.append(target_data, [0, 0, 0, 1])
+        else:
+            target_data = np.append(target_data, [0, 0, 0, 0])
+    target_data = np.reshape(target_data, (SAMPLES, 4))
+    # print('Target', target_data, len(target_data))
+
     # Test loaded model
     if LOAD_MODEL:
         print('[DEBUG] Loding model...')
-        model = models.load_model(f'models/1_b')
+        model = models.load_model(PATH)
+
+        print('Predictions')
+        print(model.predict(np.array([b])).round(), 'b')
+        print(model.predict(np.array([[rnd.randint(0, 1) for i in range(16)]])).round(), 'random')
+        print(model.predict(np.array([d])).round(), 'd')
 
     # Train and save model
     else:
-
-        #
-        # Train data
-        #
-        train_data = get_train_data()
-
-        #
-        # Target data
-        #
-
-        target_data = np.array([], dtype=int)
-        for data in train_data:
-            if np.array_equal(data, a):
-                target_data = np.append(target_data, [1, 0, 0, 0])
-            elif np.array_equal(data, b):
-                target_data = np.append(target_data, [0, 1, 0, 0])
-            elif np.array_equal(data, c):
-                target_data = np.append(target_data, [0, 0, 1, 0])
-            elif np.array_equal(data, d):
-                target_data = np.append(target_data, [0, 0, 0, 1])
-            else:
-                target_data = np.append(target_data, [0, 0, 0, 0])
-        target_data = np.reshape(target_data, (SAMPLES, 4))
-
-        #print('Target', target_data, len(target_data))
-
         #
         # Create model
         #
@@ -103,10 +107,10 @@ def __main__():
                             target_data,
                             epochs=EPOCHS,
                             verbose='auto',
-                            validation_split=0.2,
+                            validation_split=0.2,  # Para ajudar no treino
                             use_multiprocessing=True)
 
-        #print('\nEvaluate:', model.evaluate(x=train_data, y=target_data)[0], '\n')
+        # print('\nEvaluate:', model.evaluate(x=train_data, y=target_data)[0], '\n')
 
         #
         # Test data
@@ -125,10 +129,10 @@ def __main__():
         # Save model
         #
 
-        model.save('models/1_b', save_format='tf')
+        model.save(PATH, save_format='tf')
 
-        np.savetxt('models/1_b/test_data.txt', test_data.round(), fmt='%d', delimiter=',')
-        np.savetxt('models/1_b/model_predict.txt', predictions, fmt='%d', delimiter=',')
+        np.savetxt(PATH + 'test_data.txt', test_data.round(), fmt='%d', delimiter=',')
+        np.savetxt(PATH + 'model_predict.txt', predictions, fmt='%d', delimiter=',')
 
         print('\nSamples: ', SAMPLES, ' | Epochs: ', EPOCHS, '\n')
 
@@ -137,7 +141,7 @@ def __main__():
         plt.plot(history.history['val_loss'], label='val_loss')
         plt.plot(history.history['val_accuracy'], label='val_accuracy')
         plt.legend()
-        plt.savefig('models/1_b/last.png')
+        plt.savefig(PATH + 'last.png')
         plt.show()
 
 

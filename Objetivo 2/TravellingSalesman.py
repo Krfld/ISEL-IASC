@@ -47,10 +47,6 @@ class TravellingSalesman:
         rnd.shuffle(self.state)
         return self.state.copy()
 
-    def distanceBetweenCities(self, city1: tuple, city2: tuple) -> float:
-        # Calculate distance between two cities
-        return math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
-
     def randomNeighbor(self, state: list) -> list[tuple]:
         randomState = state.copy()
 
@@ -92,6 +88,10 @@ class TravellingSalesman:
 
         return bestState
 
+    def distanceBetweenCities(self, city1: tuple, city2: tuple) -> float:
+        # Calculate distance between two cities
+        return math.sqrt((city1[0] - city2[0])**2 + (city1[1] - city2[1])**2)
+
     def stateValue(self, state: list) -> float:  # distance between cities (returning to the first)
         # Append first city at the end
         # length = len(state)
@@ -108,7 +108,7 @@ class TravellingSalesman:
 
     ### Genetic algorithm ###
 
-    def reproduce(self, x: list, y: list) -> list[tuple]:
+    def reproduce(self, x: list[tuple], y: list[tuple]) -> list[tuple]:
         c = rnd.randint(1, len(x)-1)
 
         # No repeated elements

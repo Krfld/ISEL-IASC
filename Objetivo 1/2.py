@@ -8,8 +8,6 @@ from keras import activations
 from keras import optimizers
 from keras import models
 
-# ! Normalize inputs
-
 MATRIX_SIZE = 4
 
 SAMPLES = 1000  # 2**(MATRIX_SIZE**2-1)
@@ -17,8 +15,9 @@ EPOCHS = 10
 
 TRAIN_TEST_RATIO = 0.8
 
-LOAD_MODEL = False
-FOLDER = 'last'
+LOAD_MODEL = True
+PATH = 'Objetivo 1/models/2/'
+FOLDER = '1_4x4_s10k_e1k_1024x3'
 
 sample = np.array([[1, 1, 0, 1],
                    [1, 0, 1, 1],
@@ -130,17 +129,17 @@ def get_model():
 
 
 def __main__():
+    # Generate data
+    print('[DEBUG] Generating target data...')
+    data = get_data()
+
     # Test loaded model
     if LOAD_MODEL:
         print('[DEBUG] Loding model...')
-        model = models.load_model(f'models/2/{FOLDER}')
+        model = models.load_model(PATH + FOLDER)
 
     # Train and save model
     else:
-        # Generate data
-        print('[DEBUG] Generating target data...')
-        data = get_data()
-
         target_data = data[:int(SAMPLES * TRAIN_TEST_RATIO)]
         # print('Target Data\n', target_data)
 
@@ -165,7 +164,7 @@ def __main__():
         print(f'[DEBUG] Took {time.time() - start}s | Samples: {SAMPLES} | Epochs: {EPOCHS}')
 
         # Save model
-        model.save('models/2/last', save_format='tf')
+        model.save(PATH + 'last', save_format='tf')
 
         # Plot performance
         pyplot.plot(history.history['loss'], label='loss')
@@ -173,22 +172,26 @@ def __main__():
         pyplot.plot(history.history['val_loss'], label='val_loss')
         pyplot.plot(history.history['val_accuracy'], label='val_accuracy')
         pyplot.legend()
+        pyplot.savefig(PATH + 'last.png')
         pyplot.show()
 
-        # Test model
-        test_target_data = data[int(SAMPLES * TRAIN_TEST_RATIO):]
-        test_data = np.array([get_matrix_outputs(m) for m in test_target_data], dtype=int)
+    # Test model
+    test_target_data = data[int(SAMPLES * TRAIN_TEST_RATIO):]
+    test_data = np.array([get_matrix_outputs(m) for m in test_target_data], dtype=int)
 
-        print('[DEBUG] Evaluating model...')
-        print(model.evaluate(test_data, test_target_data))
+    print('[DEBUG] Evaluating model...')
+    print('\n[Loss, Accuracy]', model.evaluate(test_data, test_target_data))
 
-    result = np.reshape(
-        model.predict(np.array([get_matrix_outputs(np.reshape(sample, MATRIX_SIZE ** 2))])).round(),
+    sample_input = get_matrix_outputs(np.reshape(sample, MATRIX_SIZE ** 2))
+    result = np.array(np.reshape(
+        model.predict(np.array([sample_input])).round(),
         (MATRIX_SIZE, MATRIX_SIZE)
-    )
+    ), dtype=int)
 
-    print(result)
-    print(np.array_equal(result, sample))
+    print('\nInput\n', sample_input)
+    print('Expected\n', sample)
+    print('Output\n', result)
+    print('Assert:', np.array_equal(result, sample))
 
 
 print('\n' + '-'*100 + '\n')
