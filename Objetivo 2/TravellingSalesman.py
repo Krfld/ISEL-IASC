@@ -4,14 +4,14 @@ import matplotlib.pyplot as plt
 
 
 class TravellingSalesman:
-    def __init__(self, N: int, size: int = 100, printState: bool = True):
+    def __init__(self, N: int, worldSize: int = 100, printState: bool = True):
         self.state = []
 
         for i in range(N):
             # Check that every city is different
-            city = (rnd.randint(0, size), rnd.randint(0, size))
+            city = (rnd.randint(0, worldSize), rnd.randint(0, worldSize))
             while city in self.state:
-                city = (rnd.randint(0, size), rnd.randint(0, size))
+                city = (rnd.randint(0, worldSize), rnd.randint(0, worldSize))
 
             self.state.append(city)
             # self.state = np.reshape(self.state, (i+1, 2))
@@ -119,9 +119,9 @@ class TravellingSalesman:
         # child = np.reshape(child, (len(x), 2))
         return child
 
-    def population(self, populationSize: int = 100) -> list[list[tuple]]:
-        population = [self.initialState() for i in range(populationSize)]
-        # population = np.reshape(population, (populationSize, self.N*2))
+    def population(self, populationworldSize: int = 100) -> list[list[tuple]]:
+        population = [self.initialState() for i in range(populationworldSize)]
+        # population = np.reshape(population, (populationworldSize, self.N*2))
         return population
 
     def fitnessFunction(self, element: list[tuple]) -> float:
