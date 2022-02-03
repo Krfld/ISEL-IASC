@@ -384,7 +384,7 @@
 											"top": 269,
 											"width": 294.4677734375,
 											"height": 13,
-											"text": "+TravellingSalesman(N: int, size: int)",
+											"text": "+TravellingSalesman(N: int, worldSize: int)",
 											"horizontalAlignment": 0
 										},
 										{
@@ -687,7 +687,7 @@
 									"_parent": {
 										"$ref": "AAAAAAF+u6asbP3ZX2M="
 									},
-									"name": "size",
+									"name": "worldSize",
 									"type": "int"
 								}
 							]
