@@ -119,9 +119,9 @@ class TravellingSalesman:
         # child = np.reshape(child, (len(x), 2))
         return child
 
-    def population(self, populationworldSize: int = 100) -> list[list[tuple]]:
-        population = [self.initialState() for i in range(populationworldSize)]
-        # population = np.reshape(population, (populationworldSize, self.N*2))
+    def population(self, populationSize: int = 100) -> list[list[tuple]]:
+        population = [self.initialState() for i in range(populationSize)]
+        # population = np.reshape(population, (populationSize, self.N*2))
         return population
 
     def fitnessFunction(self, element: list[tuple]) -> float:

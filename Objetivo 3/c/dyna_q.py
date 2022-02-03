@@ -28,12 +28,12 @@ class DynaQ(QLearning):
         self.num_sim = num_sim
         self.modelo = ModeloTR()
 
-    def simular(self):
-        for i in range(self.num_sim):
-            s, a, r, sn = self.modelo.amostrar()
-            super().aprender(s, a, r, sn)
-
     def aprender(self, s: Estado, a: Acao, r: float, sn: Estado):
         super().aprender(s, a, r, sn)  # d)
         self.modelo.atualizar(s, a, r, sn)  # e)
         self.simular()  # f)
+
+    def simular(self):
+        for i in range(self.num_sim):
+            s, a, r, sn = self.modelo.amostrar()
+            super().aprender(s, a, r, sn)
