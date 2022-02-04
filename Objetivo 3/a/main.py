@@ -1,13 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from estado_acao import *
+from estado import *
 
 
 class Mundo:
-    def __init__(self, nomeArquivo: str):
-        self.mundo = carregarMundo(nomeArquivo)
+    def __init__(self, nomeArquivo: str, mostrarGrafico: bool = True):
+        self.mundo, self.s, self.alvo = self.carregarMundo(nomeArquivo)
+        self.mostrarGrafico = mostrarGrafico
+        self.adjacentes(self.alvo)
+        self.valorMundo = self.propagarValor([self.alvo])
 
-    def carregarMundo(self, nomeArquivo: str) -> list[list[int]]:
+        mundo = [[x for x in y] for y in self.mundo]
+        for v in self.valorMundo:
+            mundo[v.y][v.x] = self.valorMundo[v]
+
+        plt.imshow(mundo)
+        plt.show()
+
+    def carregarMundo(self, nomeArquivo: str):
         with open(nomeArquivo, "r") as arquivo:
             lines = arquivo.readlines()
             mundo: list[list[int]] = np.zeros((len(lines), len(lines[0].removesuffix('\n'))), dtype=int)
@@ -34,3 +44,56 @@ class Mundo:
             print(estadoInicial, 'Start')
             print(alvo, 'End')
             return mundo, estadoInicial, alvo
+
+    def mostrar(self):
+        print(self.s)
+
+        posicao = [[x for x in y] for y in self.mundo]
+        posicao[self.s.y][self.s.x] = 1  # Colocar o agente na posicao atual
+
+        if self.mostrarGrafico:
+            # plt.title("Movimentos: " + str(self.movimentos))
+            plt.imshow(posicao)
+            plt.show()
+
+    def propagarValor(self, objetivos: list[Estado], max: int = 10, gama: float = 0.95):
+        V = {}
+        frenteDeOnda = []
+
+        for o in objetivos:
+            V[o] = max
+            frenteDeOnda.append(o)
+
+        while len(frenteDeOnda) > 0:  # Enquanto houver estados na frente de onda
+            s = frenteDeOnda.pop(0)
+            for a in self.adjacentes(s):
+                v = V[s] * gama  # Atenua o valor
+                if v > V.get(a, -1):  # Caso haja um valor pior no estado adjacente, substitui e adiciona à frente de onda
+                    V[a] = v
+                    frenteDeOnda.append(a)
+        return V
+
+    def adjacentes(self, s: Estado) -> list[Estado]:
+        # Estados adjacentes na vertical e horizental apenas, verificando obstáculos
+        adjacentes: list[Estado] = []
+        if s.x > 0:
+            e = Estado(s.x - 1, s.y)
+            if self.mundo[e.y][e.x] != -1:
+                adjacentes.append(e)
+        if s.x < len(self.mundo[0]) - 1:
+            e = Estado(s.x + 1, s.y)
+            if self.mundo[e.y][e.x] != -1:
+                adjacentes.append(e)
+        if s.y > 0:
+            e = Estado(s.x, s.y - 1)
+            if self.mundo[e.y][e.x] != -1:
+                adjacentes.append(e)
+        if s.y < len(self.mundo) - 1:
+            e = Estado(s.x, s.y + 1)
+            if self.mundo[e.y][e.x] != -1:
+                adjacentes.append(e)
+        return adjacentes
+
+
+if __name__ == '__main__':
+    m = Mundo("Objetivo 3/proj-obj3-amb/amb1.txt")  # Carrega o mundo, colocando o agente de volta ao início

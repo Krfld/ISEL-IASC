@@ -15,7 +15,7 @@ class Mundo:
         if self.mostrarGrafico:
             plt.ion()
 
-    def carregarMundo(self, nomeArquivo: str) -> list[list[int]]:
+    def carregarMundo(self, nomeArquivo: str):
         with open(nomeArquivo, "r") as arquivo:
             lines = arquivo.readlines()
             mundo: list[list[int]] = np.zeros((len(lines), len(lines[0].removesuffix('\n'))), dtype=int)
