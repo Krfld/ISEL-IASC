@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from estado import *
 
 
-class Mundo:
+class Wavefront:
     def __init__(self, nomeArquivo: str, mostrarGrafico: bool = True):
         self.mundo, self.s, self.alvo = self.carregarMundo(nomeArquivo)
         self.mostrarGrafico = mostrarGrafico
@@ -87,10 +87,10 @@ class Mundo:
                 adjacentes.append(e)
         return adjacentes
 
-    def getPath(self, s: Estado, alvo: Estado):
+    def getPath(self, s: Estado):
         # Retorna os estados no caminho do estado inicial até o alvo
         self.path = []
-        while s != alvo:
+        while s != self.alvo:
             self.path.append(s)
             sn = max(self.adjacentes(s), key=lambda s: self.valorMundo[s])
             s = sn
@@ -109,6 +109,6 @@ class Mundo:
 
 
 if __name__ == '__main__':
-    m = Mundo("Objetivo 3/proj-obj3-amb/amb2.txt")  # Carrega o mundo, colocando o agente de volta ao início
-    path = m.getPath(m.s, m.alvo)
-    m.showPath(path)
+    w = Wavefront("Objetivo 3/proj-obj3-amb/amb2.txt")  # Carrega o mundo, colocando o agente de volta ao início
+    path = w.getPath(w.s)
+    w.showPath(path)
