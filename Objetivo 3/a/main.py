@@ -5,22 +5,10 @@ from estado import *
 
 class Mundo:
     def __init__(self, nomeArquivo: str, mostrarGrafico: bool = True):
-        self.mundo, self.start, self.alvo = self.carregarMundo(nomeArquivo)
-        self.s = self.start
+        self.mundo, self.s, self.alvo = self.carregarMundo(nomeArquivo)
         self.mostrarGrafico = mostrarGrafico
         self.valorMundo = self.propagarValor([self.alvo])
-
-        mundo = [[x for x in y] for y in self.mundo]
-        for v in self.valorMundo:
-            mundo[v.y][v.x] = self.valorMundo[v]
-
-        path = self.getPath(self.s)
-
-        # for s in path:
-        #     mundo[s.y][s.x] = 0
-
-        plt.imshow(mundo)
-        plt.show()
+        self.path = []
 
     def carregarMundo(self, nomeArquivo: str):
         with open(nomeArquivo, "r") as arquivo:
@@ -57,7 +45,6 @@ class Mundo:
         posicao[self.s.y][self.s.x] = 1  # Colocar o agente na posicao atual
 
         if self.mostrarGrafico:
-            # plt.title("Movimentos: " + str(self.movimentos))
             plt.imshow(posicao)
             plt.show()
 
@@ -80,7 +67,7 @@ class Mundo:
         return V
 
     def adjacentes(self, s: Estado) -> list[Estado]:
-        # Estados adjacentes na vertical e horizental apenas, verificando obstáculos
+        # Estados adjacentes apenas na vertical e horizontal evitando obstáculos
         adjacentes: list[Estado] = []
         if s.x > 0:
             e = Estado(s.x - 1, s.y)
@@ -100,14 +87,28 @@ class Mundo:
                 adjacentes.append(e)
         return adjacentes
 
-    def getPath(self, s: Estado):
-        path = []
-        while s != self.alvo:
-            path.append(s)
+    def getPath(self, s: Estado, alvo: Estado):
+        # Retorna os estados no caminho do estado inicial até o alvo
+        self.path = []
+        while s != alvo:
+            self.path.append(s)
             sn = max(self.adjacentes(s), key=lambda s: self.valorMundo[s])
             s = sn
-        return path
+        return self.path
+
+    def showPath(self, path: list[Estado] = []):
+        mundo = [[x for x in y] for y in self.mundo]
+        for v in self.valorMundo:
+            mundo[v.y][v.x] = self.valorMundo[v]
+
+        for s in path:
+            mundo[s.y][s.x] = -5
+
+        plt.imshow(mundo)
+        plt.show()
 
 
 if __name__ == '__main__':
-    m = Mundo("Objetivo 3/proj-obj3-amb/amb1.txt")  # Carrega o mundo, colocando o agente de volta ao início
+    m = Mundo("Objetivo 3/proj-obj3-amb/amb2.txt")  # Carrega o mundo, colocando o agente de volta ao início
+    path = m.getPath(m.s, m.alvo)
+    m.showPath(path)
