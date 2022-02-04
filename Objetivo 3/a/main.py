@@ -5,14 +5,19 @@ from estado import *
 
 class Mundo:
     def __init__(self, nomeArquivo: str, mostrarGrafico: bool = True):
-        self.mundo, self.s, self.alvo = self.carregarMundo(nomeArquivo)
+        self.mundo, self.start, self.alvo = self.carregarMundo(nomeArquivo)
+        self.s = self.start
         self.mostrarGrafico = mostrarGrafico
-        self.adjacentes(self.alvo)
         self.valorMundo = self.propagarValor([self.alvo])
 
         mundo = [[x for x in y] for y in self.mundo]
         for v in self.valorMundo:
             mundo[v.y][v.x] = self.valorMundo[v]
+
+        path = self.getPath(self.s)
+
+        # for s in path:
+        #     mundo[s.y][s.x] = 0
 
         plt.imshow(mundo)
         plt.show()
@@ -56,12 +61,13 @@ class Mundo:
             plt.imshow(posicao)
             plt.show()
 
-    def propagarValor(self, objetivos: list[Estado], max: int = 10, gama: float = 0.95):
+    def propagarValor(self, objetivos: list[Estado], gain: int = 10):
         V = {}
         frenteDeOnda = []
+        gama = len(self.mundo)/(len(self.mundo)+1)  # Gama proporcional oa mundo
 
         for o in objetivos:
-            V[o] = max
+            V[o] = gain
             frenteDeOnda.append(o)
 
         while len(frenteDeOnda) > 0:  # Enquanto houver estados na frente de onda
@@ -93,6 +99,14 @@ class Mundo:
             if self.mundo[e.y][e.x] != -1:
                 adjacentes.append(e)
         return adjacentes
+
+    def getPath(self, s: Estado):
+        path = []
+        while s != self.alvo:
+            path.append(s)
+            sn = max(self.adjacentes(s), key=lambda s: self.valorMundo[s])
+            s = sn
+        return path
 
 
 if __name__ == '__main__':
