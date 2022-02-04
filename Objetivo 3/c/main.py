@@ -5,13 +5,6 @@ from mecanismo_aprend_ref import *
 
 class Mundo:
     def __init__(self, nomeArquivo: str, multiplicadorReforço: float = 10, custoMover: float = 0.01, mostrarGrafico: bool = True):
-        # self.mundo: list[list[int]] = [[0, 0, 0, 0, 0, 0, 0, -1, 1],
-        #                                [0, 0, -1, 0, 0, -1, 0, -1, 0],
-        #                                [0, 0, -1, 0, 0, -1, 0, -1, 0],
-        #                                [0, 0, -1, 0, 0, -1, 0, 0, 0],
-        #                                [0, 0, 0, 0, 0, -1, 0, -1, -1],
-        #                                [0, 0, 0, 0, 0, -1, 0, 0, 0]]
-
         self.mundo, self.s, self.alvo = self.carregarMundo(nomeArquivo)  # Obtem o mundo, o estado inicial e o alvo
 
         self.multiplicadorReforço = multiplicadorReforço
@@ -91,13 +84,13 @@ if __name__ == '__main__':
     mar = MecanismoAprendRef([Acao(1, 0), Acao(-1, 0), Acao(0, -1), Acao(0, 1)])
 
     while True:
-        m = Mundo("Objetivo 3/proj-obj3-amb/amb1.txt")
+        m = Mundo("Objetivo 3/proj-obj3-amb/amb1.txt")  # Carrega o mundo, colocando o agente de volta ao início
         while True:
-            a = mar.selecionar_acao(m.estadoAtual())
-            sn, r = m.mover(a)
-            mar.aprender(m.estadoAtual(), a, r, sn)
+            a = mar.selecionar_acao(m.estadoAtual())  # Seleciona a acao
+            sn, r = m.mover(a)  # Move o agente
+            mar.aprender(m.estadoAtual(), a, r, sn)  # Aprende
 
-            m.atualizarEstado(sn)
+            m.atualizarEstado(sn)  # Atualiza o estado
             m.mostrar()
 
             if (sn == m.alvo):
